@@ -3,6 +3,7 @@
     import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
     import ClearColorIcon from "@iconify-svelte/material-symbols/format-color-reset-rounded";
+    import ColorPaletteIcon from "@iconify-svelte/material-symbols/palette";
 
     import type { Attachment } from "svelte/attachments";
     import ScriptButton, { type Button } from "./ScriptButton.svelte";
@@ -58,6 +59,45 @@
 
         return () => clearTimeout(timeout);
     });
+
+    // Checks the user-agent to see if it is Windows 10 Firefox
+    function IsFirefoxOnWindows() {
+        const navigatorAgent = navigator.userAgent;
+        // eslint somehow thinks that \. is the same as . in regex
+        // eslint-disable-next-line no-useless-escape
+        const checkingRegex =
+            /^Mozilla\/\d\.\d \(Windows NT \d\d\.\d;.+\) Gecko\/(\d+) Firefox\/[\d\.]+$/;
+        return checkingRegex.exec(navigatorAgent) !== null;
+    }
+
+    const isFirefox = IsFirefoxOnWindows();
+
+    const colorPalette: { value: string; name: string }[] = [
+        // Greyscale
+        { value: "#000000", name: "Black" },
+        { value: "#777777", name: "Grey" },
+        { value: "#ffffff", name: "White" },
+        // Laserviolet :)
+        { value: "#cc99ff", name: "Laserviolet" },
+        // Tailwind primaries
+        { value: "#ff6467", name: "Red" },
+        { value: "#ff8903", name: "Orange" },
+        { value: "#ffb900", name: "Amber" },
+        { value: "#fdc700", name: "Yellow" },
+        { value: "#9ae600", name: "Lime" },
+        { value: "#06df72", name: "Green" },
+        { value: "#40f5bc", name: "Emerald" },
+        { value: "#00d5bd", name: "Teal" },
+        { value: "#00d3f2", name: "Cyan" },
+        { value: "#00bcff", name: "Sky" },
+        { value: "#51a2ff", name: "Blue" },
+        { value: "#7c86ff", name: "Indigo" },
+        { value: "#a684ff", name: "Violet" },
+        { value: "#c27aff", name: "Purple" },
+        { value: "#ed6bff", name: "Fuchsia" },
+        { value: "#fb64b6", name: "Pink" },
+        { value: "#ff637e", name: "Rose" },
+    ];
 </script>
 
 {#if formButton}
@@ -134,19 +174,64 @@
                 </div>
             </div>
             <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-1 font-semibold">
-                    <ColorIcon class="size-[1lh]" />
-                    <span class="grow">Color</span>
-                    <button
-                        class="icon-button size-[1lh] shrink-0"
-                        aria-label="Clear color"
-                        onclick={() => {
-                            if (formButton) formButton.color = undefined;
-                        }}
-                    >
-                        <ClearColorIcon />
-                    </button>
-                </div>
+                {#if isFirefox}
+                    <fieldset aria-labelledby="sample-color-legend">
+                        <div class="gap1 flex items-center font-semibold">
+                            <ColorPaletteIcon class="size-[1lh]" />
+                            <legend id="sample-color-legend" class="grow">Sample Colors</legend>
+                            <button
+                                class="icon-button size-[1lh] shrink-0"
+                                aria-label="Clear color"
+                                onclick={() => {
+                                    if (formButton) formButton.color = undefined;
+                                }}
+                            >
+                                <ClearColorIcon />
+                            </button>
+                        </div>
+                        <div role="none" class="mx-auto grid grid-cols-7 justify-center-safe">
+                            {#each colorPalette as colorEntry}
+                                <button
+                                    class={[
+                                        "relative aspect-square cursor-pointer rounded-lg border",
+                                        formButton.color == colorEntry.value
+                                            ? "border-brand!"
+                                            : "border-transparent!",
+                                    ]}
+                                    aria-label={colorEntry.name}
+                                    onclick={() => {
+                                        if (formButton) formButton.color = colorEntry.value;
+                                    }}
+                                >
+                                    <div
+                                        role="none"
+                                        style={"background-color:" + colorEntry.value}
+                                        class="absolute inset-1 rounded-sm"
+                                    ></div>
+                                </button>
+                            {/each}
+                        </div>
+                    </fieldset>
+                    <div class="flex items-center gap-1 font-semibold">
+                        <ColorIcon class="size-[1lh]" />
+                        <span class="grow">Color Picker</span>
+                    </div>
+                {:else}
+                    <div class="flex items-center gap-1 font-semibold">
+                        <ColorIcon class="size-[1lh]" />
+                        <span class="grow">Color</span>
+
+                        <button
+                            class="icon-button size-[1lh] shrink-0"
+                            aria-label="Clear color"
+                            onclick={() => {
+                                if (formButton) formButton.color = undefined;
+                            }}
+                        >
+                            <ClearColorIcon />
+                        </button>
+                    </div>
+                {/if}
                 <div
                     class="relative h-10 w-full border"
                     style:background={formButton.color ?? "var(--color-secondary)"}
@@ -164,30 +249,9 @@
                 </div>
 
                 <datalist id="color-suggestions">
-                    <!-- Greyscale -->
-                    <option value="#000000">Black</option>
-                    <option value="#777777">Grey</option>
-                    <option value="#ffffff">White</option>
-                    <!-- Laserviolet :) -->
-                    <option value="#cc99ff">Laserviolet</option>
-                    <!-- Tailwind primaries -->
-                    <option value="#ff6467">Red</option>
-                    <option value="#ff8903">Orange</option>
-                    <option value="#ffb900">Amber</option>
-                    <option value="#fdc700">Yellow</option>
-                    <option value="#9ae600">Lime</option>
-                    <option value="#06df72">Green</option>
-                    <option value="#40f5bc">Emerald</option>
-                    <option value="#00d5bd">Teal</option>
-                    <option value="#00d3f2">Cyan</option>
-                    <option value="#00bcff">Sky</option>
-                    <option value="#51a2ff">Blue</option>
-                    <option value="#7c86ff">Indigo</option>
-                    <option value="#a684ff">Violet</option>
-                    <option value="#c27aff">Purple</option>
-                    <option value="#ed6bff">Fuchsia</option>
-                    <option value="#fb64b6">Pink</option>
-                    <option value="#ff637e">Rose</option>
+                    {#each colorPalette as colorEntry}
+                        <option value={colorEntry.value}>{colorEntry.name}</option>
+                    {/each}
                 </datalist>
             </div>
 
