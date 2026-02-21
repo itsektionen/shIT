@@ -68,16 +68,11 @@
         style:width="min(calc(var(--spacing) * 90), 100%)"
         class={[
             "bg-transparent text-foreground select-none",
+            "flex flex-col-reverse",
             "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible",
             "backdrop:bg-black/40 backdrop:backdrop-blur-sm",
         ]}
     >
-        <div class="pointer-events-none flex w-full justify-center">
-            <div class="rounded-t border-2 border-b-0 bg-background p-4 shadow-xl">
-                <ScriptButton btn={formButton} onEdit={undefined} />
-            </div>
-        </div>
-
         <div class={["rounded border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}>
             <h2 class="text-xl font-semibold">Edit Button</h2>
 
@@ -148,7 +143,7 @@
                     </button>
                 </div>
                 <div
-                    class="relative h-10 w-full border"
+                    class="relative h-10 w-full border ring-brand focus-within:ring"
                     style:background={formButton.color ?? "var(--color-secondary)"}
                 >
                     <input
@@ -200,17 +195,24 @@
                 </button>
                 <div class="grow"></div>
                 <button
-                    onclick={() => closeWith(null)}
+                    onclick={() => closeWith(undefined)}
                     class="rounded bg-zinc-400 px-2 py-1 text-black"
                 >
                     Cancel
                 </button>
                 <button
                     onclick={() => closeWith(formButton)}
-                    class="rounded bg-brand px-2 py-1 text-brand-foreground"
+                    class="rounded bg-green-400 px-2 py-1 text-black"
                 >
                     Save
                 </button>
+            </div>
+        </div>
+
+        <!-- at bottom with a reverse column as a hacky workaround for tab indexing starting at this element -->
+        <div class="pointer-events-none flex w-full justify-center">
+            <div class="rounded-t border-2 border-b-0 bg-background p-4 shadow-xl">
+                <ScriptButton btn={formButton} onEdit={undefined} />
             </div>
         </div>
     </dialog>
