@@ -10,7 +10,6 @@
 <script lang="ts">
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
     import Icon from "@iconify/svelte";
-    import { MediaQuery } from "svelte/reactivity";
     import { onLongPress } from "$lib/attachments/longpress";
 
     let {
@@ -20,8 +19,6 @@
         btn: Button;
         onEdit: ((btn: Button) => void) | undefined;
     } = $props();
-
-    let touchQuery = new MediaQuery("(pointer: coarse)");
 </script>
 
 <div
@@ -40,15 +37,16 @@
         }}
         // Allow editing via long press on touch devices
         {@attach onLongPress(500, () => onEdit?.(btn))}
+        oncontextmenu={(event) => event.preventDefault()}
     >
         {#if btn.iconId}
             <Icon icon={btn.iconId} class="inline-block size-[1lh]" />
         {/if}
         <span>{btn.label}</span>
     </button>
-    {#if onEdit && !touchQuery.current}
+    {#if onEdit}
         <button
-            class="absolute top-0 right-0 size-6 cursor-pointer group-focus-within:visible group-hover:visible sm:invisible"
+            class="absolute top-0 right-0 size-6 cursor-pointer group-focus-within:visible group-hover:visible sm:invisible pointer-coarse:hidden"
             title="Edit button"
             onclick={() => onEdit?.(btn)}
         >

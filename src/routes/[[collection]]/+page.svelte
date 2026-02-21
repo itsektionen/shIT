@@ -216,8 +216,8 @@
 
             <img src={logo} alt="SMN Logo" class="size-8" />
             <h1>shIT</h1>
-            <span class="h-8 w-px bg-secondary-foreground/50 not-sm:hidden"></span>
-            <span class="text-2xl not-sm:hidden">shellless Input Terminal</span>
+            <span class="h-8 w-px bg-secondary-foreground/50 not-xl:hidden"></span>
+            <span class="text-2xl not-xl:hidden">shellless Input Terminal</span>
 
             <span class="grow"></span>
             <SidebarToggleButton

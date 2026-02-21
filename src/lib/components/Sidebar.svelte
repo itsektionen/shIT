@@ -1,70 +1,39 @@
 <script lang="ts">
     import { type Snippet } from "svelte";
-    import { slide, fade } from "svelte/transition";
     import { MediaQuery } from "svelte/reactivity";
-
     import SidebarToggleButton from "./SidebarToggleButton.svelte";
-
-    const isWideQuery = new MediaQuery("(min-width: 64rem)"); // Tailwind "lg" breakpoint
 
     let {
         side = "left",
-        width = "w-64",
         children,
         toolbar,
-        ...rest
     }: {
         side?: "left" | "right";
-        width?: string; // Customizable width (default w-64)
         children: Snippet;
         toolbar?: Snippet;
-        [key: string]: unknown;
     } = $props();
 
-    let open = $state(true);
-
+    // Initualy unset, to let CSS decide the initial state (prevents flashing during initial paint)
+    let expanded = $state<boolean | undefined>(undefined);
+    // Then we can do the fancy smart stuff
+    const isWideQuery = new MediaQuery("(min-width: 64rem)");
     $effect(() => {
-        // Automatically close sidebar on mobile when switching to narrow view
-        if (!isWideQuery.current) {
-            open = false;
-        }
+        expanded = isWideQuery.current;
     });
 
     export function isOpen() {
-        return open;
+        return expanded;
     }
     export function setOpen(value: boolean) {
-        open = value;
+        expanded = value;
     }
 </script>
 
-<!-- svelte-ignore a11y_role_supports_aria_props_implicit -->
 <aside
-    class={[
-        "flex flex-col bg-background",
-        isWideQuery.current
-            ? [
-                  "h-full transition-[width] duration-300 ease-in-out",
-                  side === "left" ? "border-r" : "border-l",
-                  open ? width : "w-12",
-              ]
-            : [
-                  "fixed top-0 z-100 h-dvh w-dvw transition-[left,right,display] transition-discrete",
-                  // 3. Toggle display
-                  open ? "block" : "hidden",
-                  // 4. Handle positions AND starting-styles
-                  side === "left"
-                      ? open
-                          ? "left-0 starting:-left-full" // Where it starts when display becomes block
-                          : "-left-full"
-                      : open
-                        ? "right-0 starting:-right-full"
-                        : "-right-full",
-              ],
-    ]}
-    aria-expanded={open}
+    class={["sidebar flex flex-col bg-background", side === "left" ? "border-r" : "border-l"]}
     aria-label="{side} sidebar"
-    {...rest}
+    data-expanded={expanded}
+    data-side={side}
 >
     <header
         class={[
@@ -72,31 +41,114 @@
             side === "left" ? "flex-row" : "flex-row-reverse",
         ]}
     >
-        {#if open || !isWideQuery.current}
-            <div
-                class={[
-                    "min-w-0 flex-1 overflow-hidden",
-                    "flex flex-row items-center gap-2",
-                    side === "left" ? "mr-8 pr-2" : "ml-8 pl-2",
-                ]}
-                transition:slide={{ axis: "x", duration: 200 }}
-            >
-                {@render toolbar?.()}
-            </div>
-        {/if}
+        <div
+            class={[
+                "sidebar-toolbar flex min-w-0 shrink grow flex-row items-center gap-2",
+                side === "left" ? "mr-8 pr-2" : "ml-8 pl-2",
+            ]}
+        >
+            {@render toolbar?.()}
+        </div>
 
         <SidebarToggleButton
-            bind:open
+            bind:open={() => expanded ?? false, (value) => (expanded = value)}
             {side}
             class={["absolute", side === "left" ? "right-2.5" : "left-2.5"]}
         />
     </header>
 
-    <div class="w-full flex-1 overflow-x-hidden overflow-y-auto">
-        {#if open || !isWideQuery.current}
-            <div class="flex h-full flex-col p-2" transition:fade={{ duration: 150 }}>
-                {@render children()}
-            </div>
-        {/if}
+    <div class="relative w-full grow overflow-y-auto">
+        <div class="sidebar-contents flex h-full w-full flex-col p-2">
+            {@render children()}
+        </div>
     </div>
 </aside>
+
+<style>
+    /* Shared */
+    .sidebar {
+        top: 0;
+        height: 100dvh;
+
+        transition-timing-function: ease-in-out;
+        transition-behavior: allow-discrete;
+
+        .sidebar-contents {
+            position: absolute;
+            top: 0;
+            right: 0;
+            overflow-x: hidden;
+        }
+    }
+
+    /* Mobile & tablet */
+    @media (max-width: 64rem) {
+        .sidebar {
+            border: none;
+            position: fixed;
+            z-index: 100;
+            width: calc(var(--spacing) * 120);
+
+            transition-property: left, right, visibility;
+            transition-duration: 300ms;
+
+            visibility: hidden;
+            &[data-side="left"] {
+                left: -100%;
+            }
+            &[data-side="right"] {
+                right: -100%;
+            }
+
+            &[data-expanded="true"] {
+                visibility: visible;
+                &[data-side="left"] {
+                    left: 0;
+                }
+                &[data-side="right"] {
+                    right: 0;
+                }
+            }
+        }
+    }
+    /* Mobile only */
+    @media (max-width: 40rem) {
+        .sidebar {
+            width: 100dvw;
+        }
+    }
+
+    /* Desktop */
+    @media (min-width: 64rem) {
+        .sidebar {
+            --sidebar-width: calc(var(--spacing) * 80);
+            width: var(--sidebar-width);
+            transition-property: width;
+            transition-duration: 150ms;
+
+            .sidebar-toolbar,
+            .sidebar-contents {
+                transition-property: visibility;
+                transition: ease-in-out allow-discrete;
+                transition-duration: 150ms;
+                visibility: visible;
+            }
+            .sidebar-contents {
+                transition-property: visibility, opacity;
+                opacity: 1;
+                /* stops the contents from squishing as it dissapears */
+                min-width: var(--sidebar-width);
+            }
+            &[data-expanded="false"] {
+                width: 3rem;
+                .sidebar-toolbar,
+                .sidebar-contents {
+                    visibility: hidden;
+                }
+                .sidebar-contents {
+                    opacity: 0;
+                }
+            }
+        }
+    }
+</style>
