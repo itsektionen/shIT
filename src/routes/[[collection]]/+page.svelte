@@ -25,92 +25,11 @@
             label: "Default",
             buttons: [
                 {
-                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-                        (
-                            +c ^
-                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-                        ).toString(16),
-                    ),
+                    uuid: "abc123",
                     label: "Shot roulette",
                     color: "#E91E63",
                     iconId: "mdi:glass-cocktail",
-                },
-                {
-                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-                        (
-                            +c ^
-                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-                        ).toString(16),
-                    ),
-                    label: "All off",
-                    color: "#9E9E9E",
-                    iconId: "mdi:power-off",
-                },
-                {
-                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-                        (
-                            +c ^
-                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-                        ).toString(16),
-                    ),
-                    label: "Sound on",
-                    color: "#4CAF50",
-                    iconId: "mdi:volume-high",
-                },
-                {
-                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-                        (
-                            +c ^
-                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-                        ).toString(16),
-                    ),
-                    label: "Sound off",
-                    color: "#F44336",
-                    iconId: "mdi:volume-off",
-                },
-                {
-                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-                        (
-                            +c ^
-                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-                        ).toString(16),
-                    ),
-                    label: "Roof off",
-                    color: "#2196F3",
-                    iconId: "mdi:lightbulb-group-off",
-                },
-                {
-                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-                        (
-                            +c ^
-                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-                        ).toString(16),
-                    ),
-                    label: "Roof on",
-                    color: "#FFEB3B",
-                    iconId: "mdi:lightbulb-group",
-                },
-                {
-                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-                        (
-                            +c ^
-                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-                        ).toString(16),
-                    ),
-                    label: "Scene on",
-                    color: "#673AB7",
-                    iconId: "mdi:track-light",
-                },
-                {
-                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
-                        (
-                            +c ^
-                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-                        ).toString(16),
-                    ),
-                    label: "Scene off",
-                    color: "#3F51B5",
-                    iconId: "mdi:track-light-off",
+                    script: "shot_roulette.lua",
                 },
             ],
         },

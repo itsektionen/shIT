@@ -4,6 +4,7 @@
         label: string;
         color?: string;
         iconId?: string;
+        script: string;
     }
 </script>
 
@@ -11,6 +12,7 @@
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
     import Icon from "@iconify/svelte";
     import { onLongPress } from "$lib/attachments/longpress";
+    import { runScript } from "$lib/lmixer";
 
     let {
         btn,
@@ -33,7 +35,7 @@
     <button
         class="size-full truncate overflow-hidden px-4 text-xl font-semibold"
         onclick={() => {
-            console.log(`Clicked button ${btn.label}`);
+            runScript(btn.script);
         }}
         // Allow editing via long press on touch devices
         {@attach onLongPress(500, () => onEdit?.(btn))}
