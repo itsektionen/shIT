@@ -180,8 +180,21 @@
                             {btn}
                             onEdit={async (btn) => {
                                 const updatedButton = await editingModal.edit(btn);
-                                if (updatedButton) {
+                                switch (updatedButton) {
+                                    case null:
+                                        // User chose to delete the button
+                                        currentCollection.buttons =
+                                            currentCollection.buttons.filter(
+                                                (b) => b.uuid !== btn.uuid,
+                                            );
+                                        break;
+                                    case undefined:
+                                        // User canceleted. Do nothing.
+                                        break;
+                                    default:
+                                        // Otherwise, update the button with the new values
                                     Object.assign(btn, updatedButton);
+                                        break;
                                 }
                             }}
                         />

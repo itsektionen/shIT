@@ -9,9 +9,9 @@
     import Icon from "@iconify/svelte";
 
     let formButton = $state<Button | undefined>(undefined);
-    let resolvePromise: ((value: Button | undefined) => void) | undefined = undefined;
+    let resolvePromise: ((value: Button | null | undefined) => void) | undefined = undefined;
 
-    export function edit(button: Button): Promise<Button | undefined> {
+    export function edit(button: Button): Promise<Button | null | undefined> {
         formButton = $state.snapshot(button);
         return new Promise((resolve) => {
             resolvePromise = resolve; // So that we can resolve it outside of this function
@@ -21,7 +21,7 @@
         element.showModal();
         return () => element.close();
     };
-    function closeWith(value: Button | undefined) {
+    function closeWith(value: Button | null | undefined) {
         resolvePromise?.(value);
         formButton = undefined;
     }
@@ -191,10 +191,17 @@
                 </datalist>
             </div>
 
-            <div class="flex justify-end gap-2">
+            <div class="flex gap-2">
                 <button
-                    onclick={() => closeWith(undefined)}
+                    onclick={() => closeWith(null)}
                     class="rounded bg-red-400 px-2 py-1 text-black"
+                >
+                    Delete
+                </button>
+                <div class="grow"></div>
+                <button
+                    onclick={() => closeWith(null)}
+                    class="rounded bg-zinc-400 px-2 py-1 text-black"
                 >
                     Cancel
                 </button>
