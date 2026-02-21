@@ -26,7 +26,7 @@
 
 <div
     class={[
-        "group relative flex min-h-16 w-64 items-center justify-center text-wrap select-none",
+        "group relative flex min-h-16 w-full items-center justify-center text-wrap select-none",
         "bg-secondary hover:opacity-80 **:focus-visible:opacity-80 has-[>:first-child:active]:scale-95",
         btn.color && "text-contrast",
     ]}

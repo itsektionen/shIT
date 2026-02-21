@@ -73,7 +73,7 @@
         ]}
     >
         <div class="pointer-events-none flex w-full justify-center">
-            <div class="rounded-t border-2 border-b-0 bg-background p-4 shadow-xl">
+            <div class="w-70 rounded-t border-2 border-b-0 bg-background p-4 shadow-xl">
                 <ScriptButton btn={formButton} onEdit={undefined} />
             </div>
         </div>
