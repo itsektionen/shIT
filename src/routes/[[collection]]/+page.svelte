@@ -12,6 +12,7 @@
     import logo from "$lib/assets/SMN Logo.svg";
     import RefreshIcon from "@iconify-svelte/material-symbols/refresh-rounded";
     import { resolve } from "$app/paths";
+    import SidebarToggleButton from "$lib/components/SidebarToggleButton.svelte";
 
     interface Collection {
         id: string;
@@ -24,49 +25,89 @@
             label: "Default",
             buttons: [
                 {
-                    uuid: crypto.randomUUID(),
+                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                        (
+                            +c ^
+                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+                        ).toString(16),
+                    ),
                     label: "Shot roulette",
                     color: "#E91E63",
                     iconId: "mdi:glass-cocktail",
                 },
                 {
-                    uuid: crypto.randomUUID(),
+                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                        (
+                            +c ^
+                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+                        ).toString(16),
+                    ),
                     label: "All off",
                     color: "#9E9E9E",
                     iconId: "mdi:power-off",
                 },
                 {
-                    uuid: crypto.randomUUID(),
+                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                        (
+                            +c ^
+                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+                        ).toString(16),
+                    ),
                     label: "Sound on",
                     color: "#4CAF50",
                     iconId: "mdi:volume-high",
                 },
                 {
-                    uuid: crypto.randomUUID(),
+                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                        (
+                            +c ^
+                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+                        ).toString(16),
+                    ),
                     label: "Sound off",
                     color: "#F44336",
                     iconId: "mdi:volume-off",
                 },
                 {
-                    uuid: crypto.randomUUID(),
+                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                        (
+                            +c ^
+                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+                        ).toString(16),
+                    ),
                     label: "Roof off",
                     color: "#2196F3",
                     iconId: "mdi:lightbulb-group-off",
                 },
                 {
-                    uuid: crypto.randomUUID(),
+                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                        (
+                            +c ^
+                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+                        ).toString(16),
+                    ),
                     label: "Roof on",
                     color: "#FFEB3B",
                     iconId: "mdi:lightbulb-group",
                 },
                 {
-                    uuid: crypto.randomUUID(),
+                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                        (
+                            +c ^
+                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+                        ).toString(16),
+                    ),
                     label: "Scene on",
                     color: "#673AB7",
                     iconId: "mdi:track-light",
                 },
                 {
-                    uuid: crypto.randomUUID(),
+                    uuid: "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                        (
+                            +c ^
+                            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+                        ).toString(16),
+                    ),
                     label: "Scene off",
                     color: "#3F51B5",
                     iconId: "mdi:track-light-off",
@@ -120,13 +161,16 @@
     let collectionSearch = $state("");
     let scriptSearch = $state("");
 
+    let leftSidebar: Sidebar;
+    let rightSidebar: Sidebar;
+
     let editingModal: EditModal;
 </script>
 
 <EditModal bind:this={editingModal} />
 
 <div class="flex h-full flex-row justify-center">
-    <Sidebar side="left">
+    <Sidebar side="left" bind:this={leftSidebar}>
         {#snippet toolbar()}
             <input
                 bind:value={collectionSearch}
@@ -161,10 +205,26 @@
         <header
             class="flex h-12 shrink-0 flex-row items-center justify-center gap-2 bg-secondary px-2"
         >
+            <SidebarToggleButton
+                bind:open={
+                    () => leftSidebar?.isOpen() ?? false, (value) => leftSidebar?.setOpen(value)
+                }
+                side="left"
+            />
+            <span class="grow"></span>
+
             <img src={logo} alt="SMN Logo" class="size-8" />
             <h1>shIT</h1>
             <span class="h-8 w-px bg-secondary-foreground/50 not-sm:hidden"></span>
             <span class="text-2xl not-sm:hidden">shellless Input Terminal</span>
+
+            <span class="grow"></span>
+            <SidebarToggleButton
+                bind:open={
+                    () => rightSidebar?.isOpen() ?? false, (value) => rightSidebar?.setOpen(value)
+                }
+                side="right"
+            />
         </header>
         <main class="grow overflow-y-auto">
             <ul
@@ -193,7 +253,7 @@
                                         break;
                                     default:
                                         // Otherwise, update the button with the new values
-                                    Object.assign(btn, updatedButton);
+                                        Object.assign(btn, updatedButton);
                                         break;
                                 }
                             }}
@@ -204,7 +264,7 @@
         </main>
     </div>
 
-    <Sidebar side="right">
+    <Sidebar side="right" bind:this={rightSidebar}>
         {#snippet toolbar()}
             <input
                 type="search"
