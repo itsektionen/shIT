@@ -210,6 +210,7 @@
                     () => leftSidebar?.isOpen() ?? false, (value) => leftSidebar?.setOpen(value)
                 }
                 side="left"
+                class="lg:hidden"
             />
             <span class="grow"></span>
 
@@ -224,6 +225,7 @@
                     () => rightSidebar?.isOpen() ?? false, (value) => rightSidebar?.setOpen(value)
                 }
                 side="right"
+                class="lg:hidden"
             />
         </header>
         <main class="grow overflow-y-auto">
