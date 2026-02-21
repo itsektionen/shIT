@@ -96,7 +96,6 @@
     const sortable: Attachment<HTMLElement> = (element) => {
         const sortable = Sortable.create(element, {
             animation: 100,
-            chosenClass: "dragged-script",
             onEnd(event) {
                 if (
                     event.from !== event.to ||
@@ -212,9 +211,3 @@
         </div>
     </Sidebar>
 </div>
-
-<style>
-    :global(.dragged-script) {
-        transform: scale(105%);
-    }
-</style>

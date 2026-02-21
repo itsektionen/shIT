@@ -23,7 +23,7 @@
 <div
     class={[
         "group relative flex min-h-16 w-64 items-center justify-center text-wrap",
-        "bg-secondary hover:opacity-80 **:focus-visible:opacity-80",
+        "bg-secondary hover:opacity-80 **:focus-visible:opacity-80 has-[>:first-child:active]:scale-95",
         btn.color && "text-contrast",
     ]}
     style:--bg={btn.color}
