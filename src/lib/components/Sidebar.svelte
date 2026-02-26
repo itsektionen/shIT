@@ -14,6 +14,8 @@
     } = $props();
 
     // Initualy unset, to let CSS decide the initial state (prevents flashing during initial paint)
+    // Eslint doesn't understand there is a tiny difference between behaviours.
+    // eslint-disable-next-line svelte/prefer-writable-derived
     let expanded = $state<boolean | undefined>(undefined);
     // Then we can do the fancy smart stuff
     const isWideQuery = new MediaQuery("(min-width: 64rem)");
