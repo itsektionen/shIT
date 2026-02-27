@@ -57,7 +57,7 @@
                         name="label"
                         type="text"
                         placeholder="Create new collection"
-                        class="peer min-h-12 w-full text-center placeholder:sr-only"
+                        class="peer min-h-12 w-full text-center placeholder:sr-only placeholder:opacity-0"
                         autocomplete="off"
                     />
                     <!-- Custom placeholder with icon -->
