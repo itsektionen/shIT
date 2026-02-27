@@ -57,13 +57,14 @@
                         name="label"
                         type="text"
                         placeholder="Create new collection"
-                        class="peer min-h-12 w-full text-center placeholder:invisible placeholder:opacity-0!"
+                        class="peer min-h-12 w-full text-center placeholder:sr-only"
                         autocomplete="off"
                     />
                     <!-- Custom placeholder with icon -->
                     <div
+                        aria-hidden="true"
                         class={[
-                            "not-sr-only hidden peer-placeholder-shown:flex peer-focus-within:hidden",
+                            "hidden peer-placeholder-shown:flex peer-focus-within:hidden",
                             "pointer-events-none absolute inset-0 items-center justify-center gap-2 opacity-60",
                         ]}
                     >
