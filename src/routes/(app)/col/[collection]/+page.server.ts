@@ -1,26 +1,12 @@
-import { getCollections, getButtons, addCollection, addButton } from "$lib/server/db/operations";
-import { fail, redirect } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
+import { getButtons, addCollection, addButton } from "$lib/server/db/operations";
+import { fail } from "@sveltejs/kit";
 import { dev } from "$app/environment";
+import type { Actions, PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ params }) => {
-    const collections = await getCollections();
-    const currentCollection = collections.find((c) => c.id === params.collection);
+export const load: PageServerLoad = async ({ parent }) => {
+    const { currentCollection, ...parentData } = await parent();
     const buttons = currentCollection ? await getButtons(currentCollection.id) : undefined;
-
-    if (params.collection && !currentCollection) {
-        throw redirect(302, "/col");
-    }
-
-    // TODO: Unmockify
-    const scriptPaths = [
-        "scripts/bar.lua",
-        "scripts/baz/qux.lua",
-        "scripts/baz/quux.lua",
-        "scripts/baz/corge/grault.lua",
-    ];
-
-    return { collections, currentCollection, buttons, scriptPaths };
+    return { ...parentData, currentCollection, buttons };
 };
 
 export const actions = {

@@ -24,8 +24,10 @@
     }
 }
 
-* {
-    @apply border-border;
+@layer components {
+    * {
+        @apply border-border;
+    }
 }
 
 html,

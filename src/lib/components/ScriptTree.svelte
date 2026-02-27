@@ -102,7 +102,11 @@
         {#if node.type === "directory"}
             <li class="flex flex-col" data-expanded={expandedNodes.has(node.name)}>
                 <button
-                    class="flex p-0.5 size-full cursor-pointer items-center gap-1 hover:bg-secondary"
+                    class={[
+                        "flex size-full items-center gap-1 p-0.5",
+                        "cursor-grab hover:bg-secondary focus:bg-secondary",
+                        "border-secondary pointer-coarse:border-b pointer-coarse:py-2",
+                    ]}
                     onclick={() => {
                         if (expandedNodes.has(node.name)) {
                             expandedNodes.delete(node.name);
@@ -128,7 +132,11 @@
             <li>
                 <button
                     data-path={node.path}
-                    class="flex p-0.5 size-full cursor-grab items-center gap-1 hover:bg-secondary"
+                    class={[
+                        "flex size-full items-center gap-1 p-0.5",
+                        "cursor-grab hover:bg-secondary focus:bg-secondary",
+                        "border-secondary pointer-coarse:border-b pointer-coarse:py-2",
+                    ]}
                     onclick={() => {
                         console.log("File clicked:", node.path);
                     }}

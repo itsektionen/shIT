@@ -32,14 +32,14 @@
 </script>
 
 <aside
-    class={["sidebar flex flex-col bg-background", side === "left" ? "border-r" : "border-l"]}
+    class={["sidebar flex flex-col shrink-0 bg-background", side === "left" ? "border-r" : "border-l"]}
     aria-label="{side} sidebar"
     data-expanded={expanded}
     data-side={side}
 >
     <header
         class={[
-            "relative flex h-12 w-full shrink-0 items-center overflow-hidden border-b px-2",
+            "bg-secondary relative flex h-12 w-full shrink-0 items-center overflow-hidden border-b px-2",
             side === "left" ? "flex-row" : "flex-row-reverse",
         ]}
     >
