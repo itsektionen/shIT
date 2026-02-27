@@ -4,67 +4,45 @@
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
     import ClearColorIcon from "@iconify-svelte/material-symbols/format-color-reset-rounded";
 
-    import type { Attachment } from "svelte/attachments";
-    import ScriptButton, { type Button } from "./ScriptButton.svelte";
-    import Icon from "@iconify/svelte";
+    import ScriptButton from "./ScriptButton.svelte";
+    import type { buttonTable } from "$lib/server/db/schema";
+    import IconSearchResults from "./IconSearchResults.svelte";
+    import { enhance } from "$app/forms";
 
-    let formButton = $state<Button | undefined>(undefined);
+    type Button = typeof buttonTable.$inferSelect;
+    const uid = $props.id();
+
+    let mockButton = $state<Button | undefined>(undefined);
+
     let resolvePromise: ((value: Button | null | undefined) => void) | undefined = undefined;
 
     export function edit(button: Button): Promise<Button | null | undefined> {
-        formButton = $state.snapshot(button);
+        mockButton = $state.snapshot(button);
         return new Promise((resolve) => {
             resolvePromise = resolve; // So that we can resolve it outside of this function
         });
     }
-    const modalAttachment: Attachment<HTMLDialogElement> = (element) => {
-        element.showModal();
-        return () => element.close();
-    };
-    function closeWith(value: Button | null | undefined) {
-        resolvePromise?.(value);
-        formButton = undefined;
-    }
 
     const ICON_PREFIX = "mdi";
-    let icons = $state<string[]>([]);
-    let fetchTask = Promise.resolve();
-    $effect(() => {
-        const callbackQuery = formButton?.iconId ?? "";
-        const timeout = setTimeout(async () => {
-            if (!callbackQuery) {
-                icons = [];
-                return;
-            }
-            // Wait for the previous to finish
-            await fetchTask;
-            // We are in an outdated callback. Make way for a newer one.
-            if (callbackQuery !== formButton?.iconId) return;
-            fetchTask = fetch(
-                `https://api.iconify.design/search?${new URLSearchParams({
-                    query: callbackQuery,
-                    limit: "10",
-                    prefix: ICON_PREFIX,
-                }).toString()}`,
-            )
-                .then((res) => res.json())
-                .then((data) => {
-                    icons = data.icons || [];
-                })
-                .catch((error) => {
-                    console.error("Failed to fetch icons:", error);
-                });
-        }, 500);
-
-        return () => clearTimeout(timeout);
-    });
+    function iconNameFromId(iconId: string) {
+        return iconId.replace(new RegExp(`^${ICON_PREFIX}:`), "");
+    }
+    function iconIdFromName(name: string) {
+        return name ? `${ICON_PREFIX}:${name}` : "";
+    }
 </script>
 
-{#if formButton}
+{#if mockButton !== undefined}
     <dialog
-        {@attach modalAttachment}
+        {@attach (element) => {
+            element.showModal();
+            return () => element.close();
+        }}
         closedby="any"
-        onclose={() => closeWith(undefined)}
+        onclose={() => {
+            resolvePromise?.(mockButton);
+            mockButton = undefined;
+        }}
         style:width="min(calc(var(--spacing) * 90), 100%)"
         class={[
             "bg-transparent text-foreground select-none",
@@ -73,38 +51,56 @@
             "backdrop:bg-black/40 backdrop:backdrop-blur-sm",
         ]}
     >
-        <div class={["rounded border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}>
+        <form
+            class={["border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}
+            method="POST"
+            action="?/editButton"
+            use:enhance={(data) => {
+                console.log(data);
+            }}
+        >
             <h2 class="text-xl font-semibold">Edit Button</h2>
 
+            <!-- Label field -->
             <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-1 font-semibold">
+                <label for="{uid}-label" class="flex items-center gap-1 font-semibold">
                     <LabelIcon class="size-[1lh]" />
                     <span>Label</span>
-                </div>
+                </label>
                 <input
-                    name="Button label"
-                    bind:value={formButton.label}
+                    id="{uid}-label"
+                    name="label"
+                    bind:value={mockButton.label}
                     type="text"
                     class="w-full"
                 />
             </div>
+
+            <!-- Icon field -->
             <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-1 font-semibold">
+                <label for="{uid}-icon" class="flex items-center gap-1 font-semibold">
                     <IconIcon class="size-[1lh]" />
                     <span>Icon</span>
-                </div>
+                </label>
                 <div class="group relative">
+                    <!-- a hidden input to pass the value to the form. prevents having to expose the prefix to the user -->
                     <input
-                        name="Button icon"
+                        name="icon"
+                        value={mockButton.iconId?.trim() || "MEOW"}
+                        type="text"
+                        class="hidden"
+                    />
+                    <!-- Real input the user will use -->
+                    <input
+                        id="{uid}-icon"
                         bind:value={
-                            () => (formButton?.iconId ?? "").replace(`${ICON_PREFIX}:`, ""),
+                            () => iconNameFromId(mockButton?.iconId ?? ""),
                             (value) => {
-                                if (formButton) formButton.iconId = `${ICON_PREFIX}:${value}`;
+                                if (mockButton) mockButton.iconId = iconIdFromName(value);
                             }
                         }
                         type="text"
-                        class="peer w-full"
-                        list="icon-suggestions"
+                        class="w-full"
                         autocomplete="off"
                     />
                     <!-- a datalist doesn't cut it here so we roll our own :/ -->
@@ -114,51 +110,54 @@
                             "hidden group-focus-within:flex",
                         ]}
                     >
-                        {#each icons.length === 1 && icons[0] === formButton?.iconId ? [] : icons as icon (icon)}
-                            <button
-                                class="flex items-center gap-2 px-2 py-1 hover:bg-brand/20"
-                                onclick={() => {
-                                    if (formButton) formButton.iconId = icon;
-                                }}
-                            >
-                                <Icon {icon} />
-                                <span>{icon.replace(`${ICON_PREFIX}:`, "")}</span>
-                            </button>
-                        {/each}
+                        <IconSearchResults
+                            bind:icon={
+                                () => mockButton?.iconId ?? "",
+                                (value) => {
+                                    if (mockButton) mockButton.iconId = value;
+                                }
+                            }
+                            iconPrefix={ICON_PREFIX}
+                        />
                     </div>
                 </div>
             </div>
+
+            <!-- Color field -->
             <div class="flex flex-col gap-1">
-                <div class="flex items-center gap-1 font-semibold">
+                <label for="{uid}-color" class="flex items-center gap-1 font-semibold">
                     <ColorIcon class="size-[1lh]" />
                     <span class="grow">Color</span>
-                    <button
-                        class="icon-button size-[1lh] shrink-0"
-                        aria-label="Clear color"
-                        onclick={() => {
-                            if (formButton) formButton.color = undefined;
-                        }}
-                    >
-                        <ClearColorIcon />
-                    </button>
-                </div>
+                    {#if mockButton.color}
+                        <button
+                            type="button"
+                            class="bg-transparent p-1 text-foreground opacity-50 transition-opacity hover:opacity-100 focus:ring focus:outline-none"
+                            onclick={() => {
+                                if (mockButton) mockButton.color = null;
+                            }}
+                        >
+                            <ClearColorIcon class="size-[1lh]" />
+                        </button>
+                    {/if}
+                </label>
                 <div
                     class="relative h-10 w-full border ring-brand focus-within:ring"
-                    style:background={formButton.color ?? "var(--color-secondary)"}
+                    style:background={mockButton.color ?? "var(--color-secondary)"}
                 >
                     <input
-                        name="Button color"
-                        value={formButton.color ?? "#808080"}
+                        id="{uid}-color"
+                        value={mockButton.color || "#808080"}
                         oninput={(event) => {
-                            if (formButton) formButton.color = event.currentTarget.value;
+                            if (mockButton) mockButton.color = event.currentTarget.value;
                         }}
                         type="color"
                         class="absolute inset-0 size-full cursor-pointer opacity-0"
-                        list="color-suggestions"
+                        list="{uid}-color-suggestions"
                     />
+                    <!-- Similar hack to be able to submit null colors -->
+                    <input name="color" value={mockButton.color || ""} type="text" class="hidden" />
                 </div>
-
-                <datalist id="color-suggestions">
+                <datalist id="{uid}-color-suggestions">
                     <!-- Greyscale -->
                     <option value="#000000">Black</option>
                     <option value="#777777">Grey</option>
@@ -186,33 +185,33 @@
                 </datalist>
             </div>
 
-            <div class="flex gap-2">
+            <div class="flex justify-end gap-2">
                 <button
-                    onclick={() => closeWith(null)}
-                    class="rounded bg-red-400 px-2 py-1 text-black"
+                    class="bg-red-400 px-2 py-1 text-black"
+                    type="submit"
+                    formaction="?/delete"
                 >
                     Delete
                 </button>
-                <div class="grow"></div>
                 <button
-                    onclick={() => closeWith(undefined)}
-                    class="rounded bg-zinc-400 px-2 py-1 text-black"
+                    class="bg-gray-400 px-2 py-1 text-black"
+                    onclick={() => {
+                        resolvePromise?.(null);
+                        mockButton = undefined;
+                    }}
                 >
                     Cancel
                 </button>
-                <button
-                    onclick={() => closeWith(formButton)}
-                    class="rounded bg-green-400 px-2 py-1 text-black"
-                >
+                <button class="bg-green-400 px-2 py-1 text-black" type="submit">
                     Save
                 </button>
             </div>
-        </div>
+        </form>
 
         <!-- at bottom with a reverse column as a hacky workaround for tab indexing starting at this element -->
         <div class="pointer-events-none flex w-full justify-center">
-            <div class="rounded-t border-2 border-b-0 bg-background p-4 shadow-xl">
-                <ScriptButton btn={formButton} onEdit={undefined} />
+            <div class="border-2 border-b-0 bg-background p-4 shadow-xl">
+                <ScriptButton btn={mockButton} onEdit={undefined} />
             </div>
         </div>
     </dialog>

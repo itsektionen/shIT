@@ -1,18 +1,11 @@
-<script lang="ts" module>
-    export interface Button {
-        uuid: string;
-        label: string;
-        color?: string;
-        iconId?: string;
-        script: string;
-    }
-</script>
-
 <script lang="ts">
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
     import Icon from "@iconify/svelte";
     import { onLongPress } from "$lib/attachments/longpress";
     import { runScript } from "$lib/lmixer";
+    import type { buttonTable } from "$lib/server/db/schema";
+
+    type Button = typeof buttonTable.$inferSelect;
 
     let {
         btn,
