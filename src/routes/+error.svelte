@@ -15,6 +15,7 @@
 </svelte:head>
 
 <div class="flex h-full flex-col items-center justify-center">
+    <p>Oh shIT.</p>
     <h1 class="text-8xl" style:color={codeColors[Math.floor(page.status / 100) * 100]}>
         {page.status}
     </h1>
