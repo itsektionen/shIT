@@ -41,7 +41,7 @@
     </button>
     {#if onEdit}
         <button
-            class="absolute top-0 right-0 size-6 cursor-pointer group-focus-within:visible group-hover:visible sm:invisible pointer-coarse:hidden"
+            class="absolute top-0 right-0 size-6 cursor-pointer group-focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0 pointer-coarse:hidden"
             title="Edit button"
             onclick={() => onEdit?.(btn)}
         >
