@@ -92,7 +92,9 @@
             <h1>shIT</h1>
             <span class="h-8 w-px bg-secondary-foreground/50 not-xl:hidden"></span>
             <span class="text-2xl text-nowrap not-xl:hidden">
-                {shitNames.split("\n")[Math.floor(Math.random() * shitNames.split("\n").length)]}
+                {shitNames.trim().split("\n")[
+                    Math.floor(Math.random() * shitNames.split("\n").length)
+                ]}
             </span>
 
             <span class="grow"></span>
