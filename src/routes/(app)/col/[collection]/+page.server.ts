@@ -1,7 +1,8 @@
 import { getButtons, addCollection, addButton } from "$lib/server/db/operations";
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { dev } from "$app/environment";
 import type { Actions, PageServerLoad } from "./$types";
+import { resolve } from "$app/paths";
 
 export const load: PageServerLoad = async ({ parent }) => {
     const { currentCollection, ...parentData } = await parent();
@@ -14,13 +15,13 @@ export const actions = {
         if (dev) await new Promise((fulfil) => setTimeout(fulfil, 1000)); // Simulate latency in dev mode
 
         const formData = await request.formData();
-        console.log("Form data received:", Object.fromEntries(formData.entries()));
         const label = formData.get("label");
         if (typeof label !== "string") {
             return fail(400, { label, error: "Label must exist and be a string" });
         }
         const created = await addCollection({ label });
-        console.log("Created collection:", created);
+
+        redirect(302, resolve(`/col/${created.id}`));
     },
 
     addButton: async ({ request }) => {

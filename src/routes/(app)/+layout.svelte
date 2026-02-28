@@ -52,13 +52,15 @@
                 </li>
             {/each}
             <li>
-                <form class="relative" method="POST" action="?/addCollection">
+                <!-- Action is attached to a page, so I need to specify one even if nonexistent -->
+                <form class="relative" method="POST" action="/col/dummy?/addCollection">
                     <input
                         name="label"
                         type="text"
                         placeholder="Create new collection"
                         class="peer min-h-12 w-full text-center placeholder:sr-only placeholder:opacity-0"
                         autocomplete="off"
+                        maxlength="24"
                     />
                     <!-- Custom placeholder with icon -->
                     <div
@@ -69,7 +71,7 @@
                         ]}
                     >
                         <AddIcon class="size-[1lh]" />
-                        <span>Create new collection</span>
+                        <span>New collection</span>
                     </div>
                 </form>
             </li>
