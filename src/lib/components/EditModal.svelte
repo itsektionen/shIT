@@ -46,11 +46,17 @@
         style:width="min(calc(var(--spacing) * 90), 100%)"
         class={[
             "bg-transparent text-foreground select-none",
-            "flex flex-col-reverse",
+            "flex flex-col",
             "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible",
             "backdrop:bg-black/40 backdrop:backdrop-blur-sm",
         ]}
     >
+        <div class="pointer-events-none flex w-full justify-center" inert>
+            <div class="border-2 border-b-0 bg-background p-4 shadow-xl">
+                <ScriptButton btn={mockButton} onEdit={undefined} />
+            </div>
+        </div>
+
         <form
             class={["border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}
             method="POST"
@@ -186,11 +192,7 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <button
-                    class="bg-red-400 px-2 py-1 text-black"
-                    type="submit"
-                    formaction="?/delete"
-                >
+                <button class="bg-red-400 px-2 py-1 text-black" type="submit" formaction="?/delete">
                     Delete
                 </button>
                 <button
@@ -202,17 +204,8 @@
                 >
                     Cancel
                 </button>
-                <button class="bg-green-400 px-2 py-1 text-black" type="submit">
-                    Save
-                </button>
+                <button class="bg-green-400 px-2 py-1 text-black" type="submit"> Save </button>
             </div>
         </form>
-
-        <!-- at bottom with a reverse column as a hacky workaround for tab indexing starting at this element -->
-        <div class="pointer-events-none flex w-full justify-center">
-            <div class="border-2 border-b-0 bg-background p-4 shadow-xl">
-                <ScriptButton btn={mockButton} onEdit={undefined} />
-            </div>
-        </div>
     </dialog>
 {/if}
