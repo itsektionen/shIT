@@ -21,6 +21,12 @@ jobs:
         run: bun install
         working-directory: ${{ env.BUILD_PATH }}
 
+      - name: Setup db
+        run: |
+          bun run db:migrate
+          echo "DATABASE_URL=file:local.db" >> $GITHUB_ENV
+        working-directory: ${{ env.BUILD_PATH }}
+
       - name: Build
         run: bun run build
         working-directory: ${{ env.BUILD_PATH }}
