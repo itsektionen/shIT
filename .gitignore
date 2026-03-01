@@ -1,8 +1,8 @@
 node_modules
 
 # Lockfiles from other package managers
+package-lock.json
 pnpm-lock.yaml
-bun.lock
 
 # Output
 /.svelte-kit
