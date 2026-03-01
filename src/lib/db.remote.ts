@@ -66,10 +66,8 @@ export const createButton = form(
 );
 
 export const editButton = form(editSchema, async ({ id, action, ...newData }) => {
-    // Simulate lag
-    await new Promise((res) => setTimeout(res, 2000));
     console.log("Editing button", { id, action, newData });
-
+    
     // FIXME: Transaction to prevent race conditions
     const button = await db
         .select()
