@@ -26,7 +26,7 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Set environment variables
-        run: echo "DATABASE_URL=file:local.db" >> .env
+        run: echo "DATABASE_URL=file:local.db" >> $GITHUB_ENV
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Build
