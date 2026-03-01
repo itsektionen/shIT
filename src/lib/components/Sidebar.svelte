@@ -13,8 +13,9 @@
         toolbar?: Snippet;
     } = $props();
 
-    // Initualy unset, to let CSS decide the initial state (prevents flashing during initial paint)
-    // the linter rule doesn't understand the a tiny difference with doing it with an effect
+    // Initially unset to let CSS decide the initial state
+    // (prevents flashing during initial paint).
+    // The linter rule does not understand the tiny difference from doing this in an effect.
     // eslint-disable-next-line svelte/prefer-writable-derived
     let expanded = $state<boolean | undefined>(undefined);
     const isWideQuery = new MediaQuery("(min-width: 64rem)");
@@ -29,6 +30,17 @@
         expanded = value;
     }
 </script>
+
+<div
+    class="sidebar-backdrop bg-black/20 backdrop-blur-sm"
+    data-expanded={expanded}
+    aria-hidden="true"
+    onclick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        expanded = false;
+    }}
+></div>
 
 <aside
     class={[
@@ -69,6 +81,10 @@
 </aside>
 
 <style>
+    .sidebar-backdrop {
+        display: none;
+    }
+
     /* Shared */
     .sidebar {
         top: 0;
@@ -87,8 +103,27 @@
 
     /* Mobile & tablet */
     @media (max-width: 64rem) {
+        .sidebar-backdrop {
+            display: block;
+            inset: 0;
+            z-index: 99;
+            pointer-events: none;
+            position: fixed;
+            transition-property: opacity, visibility;
+            transition-duration: 300ms;
+            transition-behavior: allow-discrete;
+            transition-timing-function: ease-in-out;
+            visibility: hidden;
+            opacity: 0;
+
+            &[data-expanded="true"] {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+        }
+
         .sidebar {
-            border: none;
             position: fixed;
             z-index: 100;
             width: calc(var(--spacing) * 120);
@@ -119,6 +154,7 @@
     @media (max-width: 40rem) {
         .sidebar {
             width: 100dvw;
+            border: none;
         }
     }
 
