@@ -47,8 +47,7 @@ body {
 }
 
 @layer components {
-    input[type="text"],
-    input[type="search"] {
+    input {
         @apply border bg-background px-2 py-1 text-foreground;
     }
 

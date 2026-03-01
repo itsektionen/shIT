@@ -1,13 +1,13 @@
-import { getCollections } from "$lib/server/db/operations";
-import { redirect } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
+import { getCollections } from "$lib/db.remote";
 
 export const load: LayoutServerLoad = async ({ params }) => {
     const collections = await getCollections();
     const currentCollection = collections.find((c) => c.id === params.collection);
 
     if (params.collection && !currentCollection) {
-        throw redirect(302, "/");
+        error(404, { message: "Collection not found" });
     }
 
     // TODO: Unmockify

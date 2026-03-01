@@ -2,7 +2,6 @@
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
     import Icon from "@iconify/svelte";
     import { onLongPress } from "$lib/attachments/longpress";
-    import { runScript } from "$lib/lmixer";
     import type { buttonTable } from "$lib/server/db/schema";
 
     type Button = typeof buttonTable.$inferSelect;
@@ -28,7 +27,7 @@
     <button
         class="size-full truncate overflow-hidden px-4 text-xl font-semibold"
         onclick={() => {
-            runScript(btn.script);
+            // TODO: Run script
         }}
         // Allow editing via long press on touch devices
         {@attach onLongPress(500, () => onEdit?.(btn))}

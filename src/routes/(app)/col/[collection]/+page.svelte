@@ -2,54 +2,55 @@
     import Sortable from "sortablejs";
     import type { Attachment } from "svelte/attachments";
 
-    import Sidebar from "$lib/components/Sidebar.svelte";
     import ScriptButton from "$lib/components/ScriptButton.svelte";
-    import EditModal from "$lib/components/EditModal.svelte";
+    import ButtonEditModal from "$lib/components/ButtonEditModal.svelte";
 
-    import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
     import type { PageProps } from "./$types";
+    import { createButton, getButtons, reorderButtons } from "$lib/db.remote";
 
     let { data }: PageProps = $props();
 
     const sortable: Attachment<HTMLElement> = (element) => {
-        // const sortable = Sortable.create(element, {
-        //     animation: 100,
-        //     onEnd(event) {
-        //         if (
-        //             event.from !== event.to ||
-        //             event.oldIndex === undefined ||
-        //             event.newIndex === undefined
-        //         )
-        //             return;
-        //         // Make the array stay in sync with the UI
-        //         const items = currentCollection.buttons;
-        //         const [moved] = items.splice(event.oldIndex, 1);
-        //         items.splice(event.newIndex, 0, moved);
-        //     },
-        // });
-        // return () => sortable.destroy();
+        const sortable = Sortable.create(element, {
+            animation: 100,
+            async onEnd(event) {
+                if (
+                    event.from !== event.to ||
+                    event.oldIndex === undefined ||
+                    event.newIndex === undefined
+                )
+                    return;
+
+                if (!data.currentCollection) return;
+                const buttons = await getButtons(data.currentCollection.id);
+                const [moved] = buttons.splice(event.oldIndex, 1);
+                buttons.splice(event.newIndex, 0, moved);
+                // Send to the server
+                reorderButtons(buttons.map((b) => b.id)).updates(
+                    getButtons(data.currentCollection.id).withOverride((btns) =>
+                        btns.sort((a, b) => {
+                            const aIndex = buttons.findIndex((i) => i.id === a.id);
+                            const bIndex = buttons.findIndex((i) => i.id === b.id);
+                            return aIndex - bIndex;
+                        }),
+                    ),
+                );
+            },
+        });
+        return () => sortable.destroy();
     };
 
-    let leftSidebar: Sidebar;
-    let rightSidebar: Sidebar;
-
-    let editingModal: EditModal;
+    let editingModal: ButtonEditModal;
 </script>
 
 <svelte:head>
     <title>shIT {data.currentCollection && `- ${data.currentCollection.label}`}</title>
 </svelte:head>
 
-<EditModal bind:this={editingModal} />
+<ButtonEditModal bind:this={editingModal} />
 
 <main class="grow">
-    {#if data.currentCollection === undefined}
-        <div
-            class="flex h-full flex-col items-center justify-center gap-4 text-center text-lg text-secondary-foreground"
-        >
-            <p>No collection selected.</p>
-        </div>
-    {:else}
+    {#if data.currentCollection}
         <ul
             class={[
                 "grid grid-cols-[repeat(auto-fit,minmax(calc(var(--spacing)*64),1fr))]",
@@ -57,7 +58,7 @@
             ]}
             {@attach sortable}
         >
-            {#each data.buttons as btn (btn.uuid)}
+            {#each await getButtons(data.currentCollection.id) as btn (btn.id)}
                 <li class="flex h-full flex-row justify-center">
                     <ScriptButton
                         {btn}
@@ -67,28 +68,21 @@
                     />
                 </li>
             {/each}
-            <!-- TODO: Remove temporary debug button -->
-            {#if !data.buttons}
-                <li class="flex h-full flex-row justify-center">
-                    <form
-                        class="flex h-12 w-full items-center justify-center bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                        method="POST"
-                        action="?/addButton"
-                    >
-                        <input
-                            type="text"
-                            class="hidden"
-                            name="collectionId"
-                            value={data.currentCollection?.id ?? "tmp"}
-                        />
-                        <input type="text" class="hidden" name="script" value="tmp" />
-                        <button type="submit" class="flex items-center justify-center gap-2">
-                            <AddIcon class="size-[1lh]" />
-                            <span>Add new button</span>
-                        </button>
-                    </form>
-                </li>
-            {/if}
         </ul>
+        <form {...createButton}>
+            <input
+                {...createButton.fields.collectionId.as("hidden", "text")}
+                value={data.currentCollection?.id}
+            />
+            <input
+                {...createButton.fields.scriptPath.as("hidden", "text")}
+                value={`Button #${(await getButtons(data.currentCollection.id)).length + 1}`}
+            />
+            <button type="submit" class="bg-rose-700">
+                Very awesome temporary developer button adder 9000
+            </button>
+        </form>
+    {:else}
+        <p>No collection selected</p>
     {/if}
 </main>

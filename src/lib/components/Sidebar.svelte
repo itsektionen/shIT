@@ -14,10 +14,9 @@
     } = $props();
 
     // Initualy unset, to let CSS decide the initial state (prevents flashing during initial paint)
-    // Eslint doesn't understand there is a tiny difference between behaviours.
+    // the linter rule doesn't understand the a tiny difference with doing it with an effect
     // eslint-disable-next-line svelte/prefer-writable-derived
     let expanded = $state<boolean | undefined>(undefined);
-    // Then we can do the fancy smart stuff
     const isWideQuery = new MediaQuery("(min-width: 64rem)");
     $effect(() => {
         expanded = isWideQuery.current;
@@ -32,14 +31,17 @@
 </script>
 
 <aside
-    class={["sidebar flex flex-col shrink-0 bg-background", side === "left" ? "border-r" : "border-l"]}
+    class={[
+        "sidebar flex shrink-0 flex-col bg-background",
+        side === "left" ? "border-r" : "border-l",
+    ]}
     aria-label="{side} sidebar"
     data-expanded={expanded}
     data-side={side}
 >
     <header
         class={[
-            "bg-secondary relative flex h-12 w-full shrink-0 items-center overflow-hidden border-b px-2",
+            "relative flex h-12 w-full shrink-0 items-center overflow-hidden border-b bg-secondary px-2",
             side === "left" ? "flex-row" : "flex-row-reverse",
         ]}
     >

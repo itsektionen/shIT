@@ -1,3 +1,14 @@
+<script lang="ts" module>
+    import * as vb from "valibot";
+    export const editSchema = vb.object({
+        id: vb.string(),
+        action: vb.picklist(["update", "delete"]),
+        label: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
+        color: vb.optional(vb.string()),
+        iconId: vb.optional(vb.string()),
+    });
+</script>
+
 <script lang="ts">
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
     import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
@@ -7,20 +18,14 @@
     import ScriptButton from "./ScriptButton.svelte";
     import type { buttonTable } from "$lib/server/db/schema";
     import IconSearchResults from "./IconSearchResults.svelte";
-    import { enhance } from "$app/forms";
+    import { editButton, getButtons } from "$lib/db.remote";
 
     type Button = typeof buttonTable.$inferSelect;
     const uid = $props.id();
 
-    let mockButton = $state<Button | undefined>(undefined);
-
-    let resolvePromise: ((value: Button | null | undefined) => void) | undefined = undefined;
-
-    export function edit(button: Button): Promise<Button | null | undefined> {
-        mockButton = $state.snapshot(button);
-        return new Promise((resolve) => {
-            resolvePromise = resolve; // So that we can resolve it outside of this function
-        });
+    let activeButton = $state<Button | undefined>(undefined);
+    export function edit(button: Button) {
+        activeButton = $state.snapshot(button);
     }
 
     const ICON_PREFIX = "mdi";
@@ -32,7 +37,7 @@
     }
 </script>
 
-{#if mockButton !== undefined}
+{#if activeButton !== undefined}
     <dialog
         {@attach (element) => {
             element.showModal();
@@ -40,8 +45,7 @@
         }}
         closedby="any"
         onclose={() => {
-            resolvePromise?.(mockButton);
-            mockButton = undefined;
+            activeButton = undefined;
         }}
         style:width="min(calc(var(--spacing) * 90), 100%)"
         class={[
@@ -53,19 +57,27 @@
     >
         <div class="pointer-events-none flex w-full justify-center" inert>
             <div class="border-2 border-b-0 bg-background p-4 shadow-xl">
-                <ScriptButton btn={mockButton} onEdit={undefined} />
+                <ScriptButton btn={activeButton} onEdit={undefined} />
             </div>
         </div>
 
         <form
+            {...editButton.preflight(editSchema).enhance(async ({ form, data, submit }) => {
+                const active = $state.snapshot(activeButton);
+                if (!active) return;
+                form.reset();
+                activeButton = undefined;
+                await submit().updates(
+                    getButtons(active.collectionId).withOverride((btns) =>
+                        btns.map((btn) => (btn.id === active?.id ? { ...btn, ...data } : btn)),
+                    ),
+                );
+            })}
             class={["border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}
-            method="POST"
-            action="?/editButton"
-            use:enhance={(data) => {
-                console.log(data);
-            }}
         >
             <h2 class="text-xl font-semibold">Edit Button</h2>
+
+            <input {...editButton.fields.id.as("hidden", "text")} value={activeButton.id} />
 
             <!-- Label field -->
             <div class="flex flex-col gap-1">
@@ -73,12 +85,15 @@
                     <LabelIcon class="size-[1lh]" />
                     <span>Label</span>
                 </label>
+                {#each editButton.fields.label.issues() as issue, i (i)}
+                    <span class="text-sm text-red-500">{issue.message}</span>
+                {/each}
                 <input
+                    {...editButton.fields.label.as("text")}
                     id="{uid}-label"
-                    name="label"
-                    bind:value={mockButton.label}
-                    type="text"
                     class="w-full"
+                    autocomplete="off"
+                    minlength="1"
                 />
             </div>
 
@@ -91,21 +106,19 @@
                 <div class="group relative">
                     <!-- a hidden input to pass the value to the form. prevents having to expose the prefix to the user -->
                     <input
-                        name="icon"
-                        value={mockButton.iconId?.trim() || "MEOW"}
-                        type="text"
-                        class="hidden"
+                        {...editButton.fields.iconId.as("hidden", "text")}
+                        value={activeButton.iconId?.trim() || "MEOW"}
                     />
                     <!-- Real input the user will use -->
                     <input
-                        id="{uid}-icon"
+                        type="text"
                         bind:value={
-                            () => iconNameFromId(mockButton?.iconId ?? ""),
+                            () => iconNameFromId(activeButton?.iconId ?? ""),
                             (value) => {
-                                if (mockButton) mockButton.iconId = iconIdFromName(value);
+                                if (activeButton) activeButton.iconId = iconIdFromName(value);
                             }
                         }
-                        type="text"
+                        id="{uid}-icon"
                         class="w-full"
                         autocomplete="off"
                     />
@@ -118,9 +131,9 @@
                     >
                         <IconSearchResults
                             bind:icon={
-                                () => mockButton?.iconId ?? "",
+                                () => activeButton?.iconId ?? "",
                                 (value) => {
-                                    if (mockButton) mockButton.iconId = value;
+                                    if (activeButton) activeButton.iconId = value;
                                 }
                             }
                             iconPrefix={ICON_PREFIX}
@@ -134,12 +147,12 @@
                 <label for="{uid}-color" class="flex items-center gap-1 font-semibold">
                     <ColorIcon class="size-[1lh]" />
                     <span class="grow">Color</span>
-                    {#if mockButton.color}
+                    {#if activeButton.color}
                         <button
                             type="button"
                             class="bg-transparent p-1 text-foreground opacity-50 transition-opacity hover:opacity-100 focus:ring focus:outline-none"
                             onclick={() => {
-                                if (mockButton) mockButton.color = null;
+                                if (activeButton) activeButton.color = null;
                             }}
                         >
                             <ClearColorIcon class="size-[1lh]" />
@@ -148,20 +161,23 @@
                 </label>
                 <div
                     class="relative h-10 w-full border ring-brand focus-within:ring"
-                    style:background={mockButton.color ?? "var(--color-secondary)"}
+                    style:background={activeButton.color ?? "var(--color-secondary)"}
                 >
                     <input
-                        id="{uid}-color"
-                        value={mockButton.color || "#808080"}
-                        oninput={(event) => {
-                            if (mockButton) mockButton.color = event.currentTarget.value;
-                        }}
                         type="color"
+                        value={activeButton.color || "#808080"}
+                        oninput={(event) => {
+                            if (activeButton) activeButton.color = event.currentTarget.value;
+                        }}
+                        id="{uid}-color"
                         class="absolute inset-0 size-full cursor-pointer opacity-0"
                         list="{uid}-color-suggestions"
                     />
                     <!-- Similar hack to be able to submit null colors -->
-                    <input name="color" value={mockButton.color || ""} type="text" class="hidden" />
+                    <input
+                        {...editButton.fields.color.as("hidden", "text")}
+                        value={activeButton.color || ""}
+                    />
                 </div>
                 <datalist id="{uid}-color-suggestions">
                     <!-- Greyscale -->
@@ -192,19 +208,26 @@
             </div>
 
             <div class="flex justify-end gap-2">
-                <button class="bg-red-400 px-2 py-1 text-black" type="submit" formaction="?/delete">
+                <button
+                    class="bg-red-400 px-2 py-1 text-black"
+                    {...editButton.fields.action.as("submit", "delete")}
+                >
                     Delete
                 </button>
                 <button
                     class="bg-gray-400 px-2 py-1 text-black"
                     onclick={() => {
-                        resolvePromise?.(null);
-                        mockButton = undefined;
+                        activeButton = undefined;
                     }}
                 >
                     Cancel
                 </button>
-                <button class="bg-green-400 px-2 py-1 text-black" type="submit"> Save </button>
+                <button
+                    class="bg-green-400 px-2 py-1 text-black"
+                    {...editButton.fields.action.as("submit", "update")}
+                >
+                    Save
+                </button>
             </div>
         </form>
     </dialog>

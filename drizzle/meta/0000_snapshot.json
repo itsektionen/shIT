@@ -1,14 +1,14 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1b7ed443-d1ff-4695-8740-1c7cadcf1474",
+  "id": "496f67d4-14ed-4492-982f-391156a5a698",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "button": {
       "name": "button",
       "columns": {
-        "uuid": {
-          "name": "uuid",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,

@@ -3,6 +3,7 @@
     import LeftPanelClose from "@iconify-svelte/material-symbols/left-panel-close-rounded";
     import RightPanelOpen from "@iconify-svelte/material-symbols/right-panel-open-rounded";
     import RightPanelClose from "@iconify-svelte/material-symbols/right-panel-close-rounded";
+    import type { ClassValue } from "svelte/elements";
 
     let {
         open = $bindable(false),
@@ -11,7 +12,7 @@
     }: {
         open: boolean;
         side: "left" | "right";
-        class?: string | string[];
+        class?: ClassValue;
     } = $props();
 
     const ToggleIcon = $derived.by(() => {

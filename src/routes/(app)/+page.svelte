@@ -37,7 +37,7 @@
         <div
             class="mt-2 w-full border-2 border-orange-400 bg-amber-200/50 p-4 dark:bg-amber-700/50"
         >
-            <h3>IMPORTANT NOTE!!</h3>
+            <h3>IMPORTANT!!</h3>
             <ol class="list-decimal pl-4">
                 <li>Only ever mess with Kistan while physically present.</li>
                 <li>Make sure that you are not disturbing other people.</li>

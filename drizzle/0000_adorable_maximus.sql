@@ -1,5 +1,5 @@
 CREATE TABLE `button` (
-	`uuid` text PRIMARY KEY NOT NULL,
+	`id` text PRIMARY KEY NOT NULL,
 	`collection_id` text NOT NULL,
 	`script` text NOT NULL,
 	`label` text NOT NULL,

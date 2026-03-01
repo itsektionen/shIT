@@ -7,24 +7,33 @@
     import SidebarToggleButton from "$lib/components/SidebarToggleButton.svelte";
     import ScriptTree from "$lib/components/ScriptTree.svelte";
 
-    import shitNames from "$lib/shit.txt?raw";
+    import acronymsString from "$lib/acronyms.txt?raw";
     import logo from "$lib/assets/SMN Logo.svg";
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
+    import { createCollection, getCollections } from "$lib/db.remote";
+    import { MediaQuery } from "svelte/reactivity";
 
     let { data, params, children }: LayoutProps = $props();
 
-    let collectionSearch = $state("");
-    let scriptSearch = $state("");
+    const acronyms: string[] = acronymsString
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+
+    let collectionQuery = $state("");
+    let scriptQuery = $state("");
 
     let leftSidebar: Sidebar;
     let rightSidebar: Sidebar;
+
+    const isWideQuery = new MediaQuery("(min-width: 64rem)");
 </script>
 
 <div class="flex h-full flex-row justify-center">
     <Sidebar side="left" bind:this={leftSidebar}>
         {#snippet toolbar()}
             <input
-                bind:value={collectionSearch}
+                bind:value={collectionQuery}
                 type="search"
                 aria-label="Search collections"
                 placeholder="Search"
@@ -33,34 +42,33 @@
         {/snippet}
 
         <ul class="flex w-full flex-col gap-2" aria-label="Collections">
-            {#each collectionSearch ? fuzzysort
-                      .go(collectionSearch, data.collections, { key: "label" })
-                      .map((r) => r.obj) : data.collections as collection (collection.label)}
+            {#each collectionQuery ? fuzzysort
+                      .go(collectionQuery, await getCollections(), { key: "label" })
+                      .map((r) => r.obj) : await getCollections() as collection (collection.id)}
+                {@const isCurrent = collection.id === params.collection}
                 <li>
                     <a
                         class={[
-                            "flex min-h-12 w-full items-center justify-center text-wrap hover:opacity-80",
-                            collection.id === params.collection ? "bg-brand/20" : "bg-secondary",
+                            "flex min-h-12 w-full items-center justify-center hover:opacity-80",
+                            isCurrent ? "bg-brand/20" : "bg-secondary",
                         ]}
-                        href={resolve(
-                            collection.id === params.collection ? "/" : `/col/${collection.id}`,
-                        )}
+                        href={resolve(isCurrent ? "/" : `/col/${collection.id}`)}
                         tabindex="0"
+                        onclick={() => {
+                            if (!isWideQuery.current) leftSidebar.setOpen(false);
+                        }}
                     >
-                        <span class="text-lg">{collection.label}</span>
+                        <span class="truncate px-1 text-lg">{collection.label}</span>
                     </a>
                 </li>
             {/each}
             <li>
-                <!-- Action is attached to a page, so I need to specify one even if nonexistent -->
-                <form class="relative" method="POST" action="/col/dummy?/addCollection">
+                <form class="relative" {...createCollection}>
                     <input
-                        name="label"
-                        type="text"
+                        {...createCollection.fields.label.as("text")}
                         placeholder="Create new collection"
                         class="peer min-h-12 w-full text-center placeholder:sr-only placeholder:opacity-0"
                         autocomplete="off"
-                        maxlength="24"
                     />
                     <!-- Custom placeholder with icon -->
                     <div
@@ -91,13 +99,11 @@
             />
             <span class="grow"></span>
 
-            <img src={logo} alt="SMN Logo" class="size-8" />
+            <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
             <h1>shIT</h1>
-            <span class="h-8 w-px bg-secondary-foreground/50 not-xl:hidden"></span>
-            <span class="text-2xl text-nowrap not-xl:hidden">
-                {shitNames.trim().split("\n")[
-                    Math.floor(Math.random() * shitNames.split("\n").length)
-                ]}
+            <img src={logo} alt="SMN Logo" class="size-8" />
+            <span class="truncate text-2xl text-nowrap not-lg:hidden">
+                {acronyms[Math.floor(Math.random() * acronyms.length)]}
             </span>
 
             <span class="grow"></span>
@@ -116,7 +122,7 @@
     <Sidebar side="right" bind:this={rightSidebar}>
         {#snippet toolbar()}
             <input
-                bind:value={scriptSearch}
+                bind:value={scriptQuery}
                 type="search"
                 aria-label="Search scripts"
                 placeholder="Search"
@@ -126,8 +132,8 @@
 
         <div class="flex h-full w-full flex-col overflow-auto px-1 py-2 text-sm select-none">
             <ScriptTree
-                scriptPaths={scriptSearch
-                    ? fuzzysort.go(scriptSearch, data.scriptPaths).map((r) => r.target)
+                scriptPaths={scriptQuery
+                    ? fuzzysort.go(scriptQuery, data.scriptPaths).map((r) => r.target)
                     : data.scriptPaths}
             />
         </div>

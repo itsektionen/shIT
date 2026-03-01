@@ -12,7 +12,7 @@ export const collectionTable = sqliteTable("collection", (t) => ({
 export const buttonTable = sqliteTable(
     "button",
     (t) => ({
-        uuid: t
+        id: t
             .text()
             .primaryKey()
             .notNull()
