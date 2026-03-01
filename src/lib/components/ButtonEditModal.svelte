@@ -43,7 +43,7 @@
             element.showModal();
             return () => element.close();
         }}
-        closedby="any"
+        closedby="closerequest"
         onclose={() => {
             activeButton = undefined;
         }}
