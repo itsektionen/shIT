@@ -53,7 +53,7 @@
     {#if data.currentCollection}
         <ul
             class={[
-                "grid grid-cols-[repeat(auto-fit,minmax(calc(var(--spacing)*64),1fr))]",
+                "grid grid-cols-[repeat(auto-fit,calc(var(--spacing)*64))]",
                 "items-center justify-center gap-2 p-4 ",
             ]}
             {@attach sortable}
