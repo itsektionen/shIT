@@ -67,7 +67,7 @@ export const createButton = form(
 
 export const editButton = form(editSchema, async ({ id, action, ...newData }) => {
     console.log("Editing button", { id, action, newData });
-    
+
     // FIXME: Transaction to prevent race conditions
     const button = await db
         .select()

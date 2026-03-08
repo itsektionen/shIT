@@ -10,13 +10,5 @@ export const load: LayoutServerLoad = async ({ params }) => {
         error(404, { message: "Collection not found" });
     }
 
-    // TODO: Unmockify
-    const scriptPaths = [
-        "scripts/bar.lua",
-        "scripts/baz/qux.lua",
-        "scripts/baz/quux.lua",
-        "scripts/baz/corge/grault.lua",
-    ];
-
-    return { collections, currentCollection, scriptPaths };
+    return { collections, currentCollection };
 };

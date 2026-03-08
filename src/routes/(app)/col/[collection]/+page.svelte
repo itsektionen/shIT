@@ -50,39 +50,35 @@
 <ButtonEditModal bind:this={editingModal} />
 
 <main class="grow">
-    {#if data.currentCollection}
-        <ul
-            class={[
-                "grid grid-cols-[repeat(auto-fit,calc(var(--spacing)*64))]",
-                "items-center justify-center gap-2 p-4 ",
-            ]}
-            {@attach sortable}
-        >
-            {#each await getButtons(data.currentCollection.id) as btn (btn.id)}
-                <li class="flex h-full flex-row justify-center">
-                    <ScriptButton
-                        {btn}
-                        onEdit={(btn) => {
-                            editingModal.edit(btn);
-                        }}
-                    />
-                </li>
-            {/each}
-        </ul>
-        <form {...createButton}>
-            <input
-                {...createButton.fields.collectionId.as("hidden", "text")}
-                value={data.currentCollection?.id}
-            />
-            <input
-                {...createButton.fields.scriptPath.as("hidden", "text")}
-                value={`Button #${(await getButtons(data.currentCollection.id)).length + 1}`}
-            />
-            <button type="submit" class="bg-rose-700">
-                Very awesome temporary developer button adder 9000
-            </button>
-        </form>
-    {:else}
-        <p>No collection selected</p>
-    {/if}
+    <ul
+        class={[
+            "grid grid-cols-[repeat(auto-fit,calc(var(--spacing)*64))]",
+            "items-center justify-center gap-2 p-4 ",
+        ]}
+        {@attach sortable}
+    >
+        {#each await getButtons(data.currentCollection.id) as btn (btn.id)}
+            <li class="flex h-full flex-row justify-center">
+                <ScriptButton
+                    {btn}
+                    onEdit={(btn) => {
+                        editingModal.edit(btn);
+                    }}
+                />
+            </li>
+        {/each}
+    </ul>
+    <form {...createButton}>
+        <input
+            {...createButton.fields.collectionId.as("hidden", "text")}
+            value={data.currentCollection?.id}
+        />
+        <input
+            {...createButton.fields.scriptPath.as("hidden", "text")}
+            value={`Button #${(await getButtons(data.currentCollection.id)).length + 1}`}
+        />
+        <button type="submit" class="bg-rose-700">
+            Very awesome temporary developer button adder 9000
+        </button>
+    </form>
 </main>

@@ -12,13 +12,25 @@
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
     import { createCollection, getCollections } from "$lib/db.remote";
     import { MediaQuery } from "svelte/reactivity";
+    import { onMount } from "svelte";
 
-    let { data, params, children }: LayoutProps = $props();
+    let { params, children }: LayoutProps = $props();
 
     const acronyms: string[] = acronymsString
         .split("\n")
         .map((line) => line.trim())
         .filter((line) => line.length > 0);
+
+    let scriptPaths = $state<string[]>([]);
+    onMount(() => {
+        const eventSource = new EventSource(resolve("/api/mqtt/script_paths"));
+        eventSource.onmessage = (event) => {
+            scriptPaths = JSON.parse(event.data);
+        };
+        return () => {
+            eventSource.close();
+        };
+    });
 
     let collectionQuery = $state("");
     let scriptQuery = $state("");
@@ -133,8 +145,8 @@
         <div class="flex h-full w-full flex-col overflow-auto px-1 py-2 text-sm select-none">
             <ScriptTree
                 scriptPaths={scriptQuery
-                    ? fuzzysort.go(scriptQuery, data.scriptPaths).map((r) => r.target)
-                    : data.scriptPaths}
+                    ? fuzzysort.go(scriptQuery, scriptPaths).map((r) => r.target)
+                    : scriptPaths}
             />
         </div>
     </Sidebar>
