@@ -13,6 +13,7 @@
     import { createCollection, getCollections } from "$lib/db.remote";
     import { MediaQuery } from "svelte/reactivity";
     import { onMount } from "svelte";
+    import { getScriptsContext, setScriptsContext } from "$lib/context";
 
     let { params, children }: LayoutProps = $props();
 
@@ -21,11 +22,12 @@
         .map((line) => line.trim())
         .filter((line) => line.length > 0);
 
-    let scriptPaths = $state.raw<string[]>([]);
+    let scripts = $state<ReturnType<typeof setScriptsContext>>({ paths: undefined });
+    setScriptsContext(scripts);
     onMount(() => {
         const eventSource = new EventSource(resolve("/api/mqtt/script_paths"));
         eventSource.onmessage = (event) => {
-            scriptPaths = JSON.parse(event.data);
+            scripts.paths = JSON.parse(event.data);
         };
         return () => {
             eventSource.close();
@@ -145,8 +147,10 @@
         <div class="flex h-full w-full flex-col overflow-auto px-1 py-2 text-sm select-none">
             <ScriptTree
                 scriptPaths={scriptQuery
-                    ? fuzzysort.go(scriptQuery, scriptPaths).map((r) => r.target)
-                    : scriptPaths}
+                    ? fuzzysort
+                          .go(scriptQuery, getScriptsContext().paths ?? [])
+                          .map((r) => r.target)
+                    : (getScriptsContext().paths ?? [])}
             />
         </div>
     </Sidebar>

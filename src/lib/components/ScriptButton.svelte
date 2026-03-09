@@ -1,9 +1,12 @@
 <script lang="ts">
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
+    import WarnIcon from "@iconify-svelte/material-symbols/warning-rounded";
+
     import Icon from "@iconify/svelte";
     import { onLongPress } from "$lib/attachments/longpress";
     import type { buttonTable } from "$lib/server/db/schema";
     import { runScript } from "$lib/lmixer.remote";
+    import { getScriptsContext } from "$lib/context";
 
     type Button = typeof buttonTable.$inferSelect;
 
@@ -14,6 +17,9 @@
         btn: Button;
         onEdit: ((btn: Button) => void) | undefined;
     } = $props();
+
+    let scripts = getScriptsContext();
+    let isInvalidScript = $derived(scripts.paths && !scripts.paths.includes(btn.script));
 </script>
 
 <div
@@ -39,13 +45,23 @@
         {/if}
         <span>{btn.label}</span>
     </button>
-    {#if onEdit}
+    {#if onEdit || isInvalidScript}
         <button
-            class="absolute top-0 right-0 size-6 cursor-pointer group-focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0 pointer-coarse:hidden"
-            title="Edit button"
+            class={[
+                "absolute top-0 right-0 flex h-6 min-w-6 cursor-pointer items-center gap-1",
+                isInvalidScript
+                    ? "text-amber-400"
+                    : "group-focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0 pointer-coarse:hidden",
+            ]}
+            title={isInvalidScript ? "Script not found" : "Edit button"}
             onclick={() => onEdit?.(btn)}
         >
-            <EditIcon />
+            {#if isInvalidScript}
+                <span>Unknown script</span>
+                <WarnIcon class="inline-block size-6" />
+            {:else}
+                <EditIcon />
+            {/if}
         </button>
     {/if}
 </div>

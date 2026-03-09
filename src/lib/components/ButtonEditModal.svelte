@@ -21,6 +21,7 @@
     import IconSearchResults from "./IconSearchResults.svelte";
     import { deleteButton, editButton, getButtons } from "$lib/db.remote";
     import Icon from "@iconify/svelte";
+    import { getScriptsContext } from "$lib/context";
 
     type Button = typeof buttonTable.$inferSelect;
     const uid = $props.id();
@@ -44,6 +45,8 @@
     function iconIdFromName(name: string) {
         return name ? `${ICON_PREFIX}:${name}` : "";
     }
+
+    let scripts = getScriptsContext();
 </script>
 
 {#if activeButton !== undefined}
@@ -257,11 +260,23 @@
                 <input
                     {...editButton.fields.script.as("text")}
                     id="{uid}-script"
-                    class="w-full"
+                    class="w-full invalid:text-red-400"
                     autocomplete="off"
                     minlength="1"
                     pattern=".*\S.*"
                     required
+                    oninput={(event) => {
+                        // Validate with the built-in constraints
+                        event.currentTarget.setCustomValidity("");
+                        if (!event.currentTarget.validity.valid) return;
+
+                        // Validate the script path as the user types and show errors immediately
+                        const value = event.currentTarget.value;
+                        if (!scripts.paths?.includes(value)) {
+                            event.currentTarget.setCustomValidity("Script not found");
+                        }
+                        event.currentTarget.reportValidity();
+                    }}
                 />
             </div>
 
