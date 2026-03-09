@@ -3,6 +3,7 @@
     export const buttonEditSchema = vb.object({
         id: vb.string(),
         action: vb.picklist(["update", "delete"]),
+        script: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
         label: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
         color: vb.optional(vb.string()),
         iconId: vb.optional(vb.string()),
@@ -14,6 +15,7 @@
     import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
     import ClearColorIcon from "@iconify-svelte/material-symbols/format-color-reset-rounded";
+    import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
 
     import ScriptButton from "./ScriptButton.svelte";
     import type { buttonTable } from "$lib/server/db/schema";
@@ -29,6 +31,7 @@
         activeButton = $state.snapshot(button);
         editButton.fields.set({
             id: button.id,
+            script: button.script,
             label: button.label,
             color: button.color ?? undefined,
             iconId: button.iconId ?? undefined,
@@ -91,16 +94,20 @@
                 <label for="{uid}-label" class="flex items-center gap-1 font-semibold">
                     <LabelIcon class="size-[1lh]" />
                     <span>Label</span>
+                    <span class="text-red-400">*</span>
                 </label>
                 {#each editButton.fields.label.issues() as issue, i (i)}
-                    <span class="text-sm text-red-500">{issue.message}</span>
+                    <span class="text-sm text-red-400">{issue.message}</span>
                 {/each}
                 <input
                     {...editButton.fields.label.as("text")}
                     id="{uid}-label"
+                    bind:value={activeButton.label}
                     class="w-full"
                     autocomplete="off"
                     minlength="1"
+                    pattern=".*\S.*"
+                    required
                 />
             </div>
 
@@ -110,6 +117,9 @@
                     <IconIcon class="size-[1lh]" />
                     <span>Icon</span>
                 </label>
+                {#each editButton.fields.iconId.issues() as issue, i (i)}
+                    <span class="text-sm text-red-400">{issue.message}</span>
+                {/each}
                 <div class="group relative">
                     <!-- a hidden input to pass the value to the form. prevents having to expose the prefix to the user -->
                     <input
@@ -176,6 +186,9 @@
                         </button>
                     {/if}
                 </label>
+                {#each editButton.fields.color.issues() as issue, i (i)}
+                    <span class="text-sm text-red-400">{issue.message}</span>
+                {/each}
                 <div
                     class="relative h-10 w-full border ring-brand focus-within:ring"
                     style:background={activeButton.color ?? "var(--color-secondary)"}
@@ -222,6 +235,27 @@
                     <option value="#fb64b6">Pink</option>
                     <option value="#ff637e">Rose</option>
                 </datalist>
+            </div>
+
+            <!-- Script field -->
+            <div class="flex flex-col gap-1">
+                <label for="{uid}-script" class="flex items-center gap-1 font-semibold">
+                    <ScriptIcon class="size-[1lh]" />
+                    <span>Script path</span>
+                    <span class="text-red-400">*</span>
+                </label>
+                {#each editButton.fields.script.issues() as issue, i (i)}
+                    <span class="text-sm text-red-400">{issue.message}</span>
+                {/each}
+                <input
+                    {...editButton.fields.script.as("text")}
+                    id="{uid}-script"
+                    class="w-full"
+                    autocomplete="off"
+                    minlength="1"
+                    pattern=".*\S.*"
+                    required
+                />
             </div>
 
             <div class="flex justify-end gap-2">

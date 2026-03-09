@@ -25,7 +25,7 @@
     style:background={btn.color}
 >
     <button
-        class="size-full truncate overflow-hidden px-4 text-xl font-semibold"
+        class="size-full truncate overflow-hidden px-4 text-xl font-semibold cursor-pointer"
         onclick={() => {
             // TODO: Run script
         }}
@@ -34,7 +34,7 @@
         oncontextmenu={(event) => event.preventDefault()}
     >
         {#if btn.iconId}
-            <Icon icon={btn.iconId} class="inline-block size-[1lh]" />
+            <Icon icon={btn.iconId} class="inline-block size-[1.5lh]" />
         {/if}
         <span>{btn.label}</span>
     </button>

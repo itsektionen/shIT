@@ -77,6 +77,7 @@ export const editButton = form(buttonEditSchema, async ({ id, action, ...newData
         switch (action) {
             case "update":
                 await tx.update(buttonTable).set(newData).where(eq(buttonTable.id, id));
+                console.log("Updated button with id", id, "with data", newData);
                 break;
             case "delete":
                 await tx.delete(buttonTable).where(eq(buttonTable.id, id));
