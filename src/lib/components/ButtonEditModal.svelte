@@ -26,6 +26,12 @@
     let activeButton = $state<Button | undefined>(undefined);
     export function edit(button: Button) {
         activeButton = $state.snapshot(button);
+        editButton.fields.set({
+            id: button.id,
+            label: button.label,
+            color: button.color ?? undefined,
+            iconId: button.iconId ?? undefined,
+        });
     }
 
     const ICON_PREFIX = "mdi";

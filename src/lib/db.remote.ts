@@ -3,7 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { buttonTable, collectionTable } from "$lib/server/db/schema";
 import * as vb from "valibot";
-import { fail, redirect } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import { editSchema } from "./components/ButtonEditModal.svelte";
 
 export const getCollections = query(async () => {
@@ -64,28 +64,33 @@ export const createButton = form(
         };
     },
 );
-
 export const editButton = form(editSchema, async ({ id, action, ...newData }) => {
-    console.log("Editing button", { id, action, newData });
+    const result = await db.transaction(async (tx) => {
+        const button = await tx
+            .select()
+            .from(buttonTable)
+            .where(eq(buttonTable.id, id))
+            .then((res) => res[0]);
 
-    // FIXME: Transaction to prevent race conditions
-    const button = await db
-        .select()
-        .from(buttonTable)
-        .where(eq(buttonTable.id, id))
-        .then((res) => res[0]);
-    if (!button) {
-        return fail(404, { message: "Button not found" });
-    }
+        if (!button) return { success: false };
 
-    switch (action) {
-        case "update":
-            await db.update(buttonTable).set(newData).where(eq(buttonTable.id, id));
-            break;
-        case "delete":
-            await db.delete(buttonTable).where(eq(buttonTable.id, id));
-            break;
+        switch (action) {
+            case "update":
+                await tx.update(buttonTable).set(newData).where(eq(buttonTable.id, id));
+                break;
+            case "delete":
+                await tx.delete(buttonTable).where(eq(buttonTable.id, id));
+                break;
+        }
+        return {
+            success: true,
+            collectionId: button.collectionId,
+        };
+    });
+    if (result.collectionId) {
+        await getButtons(result.collectionId).refresh();
     }
+    return { success: result.success };
 });
 export const reorderButtons = command(vb.array(vb.string()), async (orderedIds) => {
     await db.transaction(async (tx) => {
@@ -93,4 +98,7 @@ export const reorderButtons = command(vb.array(vb.string()), async (orderedIds) 
             await tx.update(buttonTable).set({ order: i }).where(eq(buttonTable.id, orderedIds[i]));
         }
     });
+});
+export const deleteButton = command(vb.string(), async (id) => {
+    await db.delete(buttonTable).where(eq(buttonTable.id, id));
 });
