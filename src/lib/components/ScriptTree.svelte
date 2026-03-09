@@ -19,6 +19,7 @@
     import FileIcon from "@iconify-svelte/material-symbols/description-rounded";
     import FolderClosedIcon from "@iconify-svelte/material-symbols/folder-rounded";
     import FolderOpenIcon from "@iconify-svelte/material-symbols/folder-open-rounded";
+    import { runScript } from "$lib/lmixer.remote";
 
     function constructTree(paths: string[]): TreeNode[] {
         const tree: TreeNode[] = [];
@@ -138,9 +139,15 @@
                         "border-secondary pointer-coarse:border-b pointer-coarse:py-2",
                     ]}
                     onclick={() => {
-                        console.log("File clicked:", node.path);
+                        runScript(node.path);
                     }}
                     draggable="true"
+                    ondragstart={(event) => {
+                        if (!event.dataTransfer) return;
+                        event.dataTransfer.effectAllowed = "link";
+                        // Used by the main button area to load scripts as buttons.
+                        event.dataTransfer.setData("lmixer/script", node.path);
+                    }}
                 >
                     <FileIcon class="size-[1lh] opacity-50" />
                     {node.name}

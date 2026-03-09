@@ -2,7 +2,6 @@
     import * as vb from "valibot";
     export const buttonEditSchema = vb.object({
         id: vb.string(),
-        action: vb.picklist(["update", "delete"]),
         script: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
         label: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
         color: vb.optional(vb.string()),
@@ -14,13 +13,13 @@
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
     import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
-    import ClearColorIcon from "@iconify-svelte/material-symbols/format-color-reset-rounded";
     import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
+    import ClearColorIcon from "@iconify-svelte/material-symbols/format-color-reset-rounded";
 
     import ScriptButton from "./ScriptButton.svelte";
     import type { buttonTable } from "$lib/server/db/schema";
     import IconSearchResults from "./IconSearchResults.svelte";
-    import { editButton, getButtons } from "$lib/db.remote";
+    import { deleteButton, editButton, getButtons } from "$lib/db.remote";
     import Icon from "@iconify/svelte";
 
     type Button = typeof buttonTable.$inferSelect;
@@ -102,7 +101,12 @@
                 <input
                     {...editButton.fields.label.as("text")}
                     id="{uid}-label"
-                    bind:value={activeButton.label}
+                    bind:value={
+                        () => activeButton?.label ?? "",
+                        (value) => {
+                            if (activeButton) activeButton.label = value;
+                        }
+                    }
                     class="w-full"
                     autocomplete="off"
                     minlength="1"
@@ -110,6 +114,9 @@
                     required
                 />
             </div>
+            {#each editButton.fields.iconId.issues() as issue, i (i)}
+                <span class="text-sm text-red-400">{issue.message}</span>
+            {/each}
 
             <!-- Icon field -->
             <div class="flex flex-col gap-1">
@@ -261,7 +268,14 @@
             <div class="flex justify-end gap-2">
                 <button
                     class="bg-red-400 px-2 py-1 text-black"
-                    {...editButton.fields.action.as("submit", "delete")}
+                    onclick={() => {
+                        if (activeButton) {
+                            deleteButton(activeButton.id).updates(
+                                getButtons(activeButton.collectionId),
+                            );
+                        }
+                        activeButton = undefined;
+                    }}
                 >
                     Delete
                 </button>
@@ -273,12 +287,7 @@
                 >
                     Cancel
                 </button>
-                <button
-                    class="bg-green-400 px-2 py-1 text-black"
-                    {...editButton.fields.action.as("submit", "update")}
-                >
-                    Save
-                </button>
+                <button class="bg-green-400 px-2 py-1 text-black"> Save </button>
             </div>
         </form>
     </dialog>

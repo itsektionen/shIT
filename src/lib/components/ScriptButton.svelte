@@ -3,6 +3,7 @@
     import Icon from "@iconify/svelte";
     import { onLongPress } from "$lib/attachments/longpress";
     import type { buttonTable } from "$lib/server/db/schema";
+    import { runScript } from "$lib/lmixer.remote";
 
     type Button = typeof buttonTable.$inferSelect;
 
@@ -25,9 +26,9 @@
     style:background={btn.color}
 >
     <button
-        class="size-full truncate overflow-hidden px-4 text-xl font-semibold cursor-pointer"
+        class="size-full cursor-pointer truncate overflow-hidden px-4 text-xl font-semibold"
         onclick={() => {
-            // TODO: Run script
+            runScript(btn.script);
         }}
         // Allow editing via long press on touch devices
         {@attach onLongPress(500, () => onEdit?.(btn))}
