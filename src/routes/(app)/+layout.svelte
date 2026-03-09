@@ -21,7 +21,7 @@
         .map((line) => line.trim())
         .filter((line) => line.length > 0);
 
-    let scriptPaths = $state<string[]>([]);
+    let scriptPaths = $state.raw<string[]>([]);
     onMount(() => {
         const eventSource = new EventSource(resolve("/api/mqtt/script_paths"));
         eventSource.onmessage = (event) => {

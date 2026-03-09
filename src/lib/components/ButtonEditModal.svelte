@@ -1,6 +1,6 @@
 <script lang="ts" module>
     import * as vb from "valibot";
-    export const editSchema = vb.object({
+    export const buttonEditSchema = vb.object({
         id: vb.string(),
         action: vb.picklist(["update", "delete"]),
         label: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
@@ -68,7 +68,7 @@
         </div>
 
         <form
-            {...editButton.preflight(editSchema).enhance(async ({ form, data, submit }) => {
+            {...editButton.preflight(buttonEditSchema).enhance(async ({ form, data, submit }) => {
                 const active = $state.snapshot(activeButton);
                 if (!active) return;
                 form.reset();

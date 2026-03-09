@@ -104,7 +104,7 @@
                 <button
                     class={[
                         "flex size-full items-center gap-1 p-0.5",
-                        "cursor-grab hover:bg-secondary focus:bg-secondary",
+                        "cursor-pointer hover:bg-secondary focus:bg-secondary",
                         "border-secondary pointer-coarse:border-b pointer-coarse:py-2",
                     ]}
                     onclick={() => {

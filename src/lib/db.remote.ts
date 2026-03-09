@@ -4,7 +4,7 @@ import { db } from "$lib/server/db";
 import { buttonTable, collectionTable } from "$lib/server/db/schema";
 import * as vb from "valibot";
 import { redirect } from "@sveltejs/kit";
-import { editSchema } from "./components/ButtonEditModal.svelte";
+import { buttonEditSchema } from "./components/ButtonEditModal.svelte";
 
 export const getCollections = query(async () => {
     return await db.select().from(collectionTable);
@@ -64,15 +64,15 @@ export const createButton = form(
         };
     },
 );
-export const editButton = form(editSchema, async ({ id, action, ...newData }) => {
-    const result = await db.transaction(async (tx) => {
+export const editButton = form(buttonEditSchema, async ({ id, action, ...newData }) => {
+    const collectionId = await db.transaction(async (tx) => {
         const button = await tx
             .select()
             .from(buttonTable)
             .where(eq(buttonTable.id, id))
             .then((res) => res[0]);
 
-        if (!button) return { success: false };
+        if (!button) return null;
 
         switch (action) {
             case "update":
@@ -82,15 +82,12 @@ export const editButton = form(editSchema, async ({ id, action, ...newData }) =>
                 await tx.delete(buttonTable).where(eq(buttonTable.id, id));
                 break;
         }
-        return {
-            success: true,
-            collectionId: button.collectionId,
-        };
+        return button.collectionId;
     });
-    if (result.collectionId) {
-        await getButtons(result.collectionId).refresh();
+    if (collectionId) {
+        await getButtons(collectionId).refresh();
     }
-    return { success: result.success };
+    return { success: collectionId !== null };
 });
 export const reorderButtons = command(vb.array(vb.string()), async (orderedIds) => {
     await db.transaction(async (tx) => {
