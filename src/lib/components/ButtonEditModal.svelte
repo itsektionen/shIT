@@ -19,6 +19,7 @@
     import type { buttonTable } from "$lib/server/db/schema";
     import IconSearchResults from "./IconSearchResults.svelte";
     import { editButton, getButtons } from "$lib/db.remote";
+    import Icon from "@iconify/svelte";
 
     type Button = typeof buttonTable.$inferSelect;
     const uid = $props.id();
@@ -113,21 +114,31 @@
                     <!-- a hidden input to pass the value to the form. prevents having to expose the prefix to the user -->
                     <input
                         {...editButton.fields.iconId.as("hidden", "text")}
-                        value={activeButton.iconId?.trim() || "MEOW"}
+                        value={activeButton.iconId?.trim() || ""}
                     />
-                    <!-- Real input the user will use -->
-                    <input
-                        type="text"
-                        bind:value={
-                            () => iconNameFromId(activeButton?.iconId ?? ""),
-                            (value) => {
-                                if (activeButton) activeButton.iconId = iconIdFromName(value);
+                    <div class="group relative" style:--size="calc(var(--spacing) * 2 + 1lh)">
+                        <!-- Real input the user will use -->
+                        <input
+                            type="text"
+                            bind:value={
+                                () => iconNameFromId(activeButton?.iconId ?? ""),
+                                (value) => {
+                                    if (activeButton) activeButton.iconId = iconIdFromName(value);
+                                }
                             }
-                        }
-                        id="{uid}-icon"
-                        class="w-full"
-                        autocomplete="off"
-                    />
+                            id="{uid}-icon"
+                            class="w-full pr-8 focus-visible:[&+*]:text-brand"
+                            autocomplete="off"
+                        />
+                        <div
+                            class={[
+                                "flex size-(--size) items-center justify-center",
+                                "absolute top-1/2 right-0 -translate-y-1/2 text-border",
+                            ]}
+                        >
+                            <Icon icon={activeButton.iconId ?? ""} class="size-(--size)" />
+                        </div>
+                    </div>
                     <!-- a datalist doesn't cut it here so we roll our own :/ -->
                     <div
                         class={[
