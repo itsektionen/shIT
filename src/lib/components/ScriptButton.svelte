@@ -48,16 +48,15 @@
     {#if onEdit || isInvalidScript}
         <button
             class={[
-                "absolute top-0 right-0 flex h-6 min-w-6 cursor-pointer items-center gap-1",
+                "absolute top-0 right-0 flex h-6 min-w-6 cursor-pointer items-center gap-0.5",
                 isInvalidScript
-                    ? "text-amber-400"
+                    ? ""
                     : "group-focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0 pointer-coarse:hidden",
             ]}
             title={isInvalidScript ? "Script not found" : "Edit button"}
             onclick={() => onEdit?.(btn)}
         >
             {#if isInvalidScript}
-                <span>Unknown script</span>
                 <WarnIcon class="inline-block size-6" />
             {:else}
                 <EditIcon />
