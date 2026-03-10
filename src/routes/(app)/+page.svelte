@@ -19,7 +19,7 @@
             {/if}
             It has a list of button collections used by various committees, events, etc. You can create
             a new one using the obvious button. If you ever want to get back here, just click the currently
-            selected category again.
+            selected collection again.
         </p>
         <p>
             {#if isMobile}
