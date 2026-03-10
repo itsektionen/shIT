@@ -220,30 +220,35 @@
                     />
                 </div>
                 <datalist id="{uid}-color-suggestions">
+                    <!-- Our beloved -->
+                    <option value="#cc99ff">Laserviolet</option>
                     <!-- Greyscale -->
                     <option value="#000000">Black</option>
                     <option value="#777777">Grey</option>
                     <option value="#ffffff">White</option>
-                    <!-- Laserviolet :) -->
-                    <option value="#cc99ff">Laserviolet</option>
-                    <!-- Tailwind primaries -->
+                    <!-- Primitives, mostly stripped-down tailwind -->
                     <option value="#ff6467">Red</option>
-                    <option value="#ff8903">Orange</option>
-                    <option value="#ffb900">Amber</option>
-                    <option value="#fdc700">Yellow</option>
+                    <option value="#ff8904">Orange</option>
+                    <option value="#fcc800">Yellow</option>
                     <option value="#9ae600">Lime</option>
-                    <option value="#06df72">Green</option>
-                    <option value="#40f5bc">Emerald</option>
-                    <option value="#00d5bd">Teal</option>
-                    <option value="#00d3f2">Cyan</option>
+                    <option value="#05df72">Green</option>
+                    <option value="#00d5be">Teal</option>
                     <option value="#00bcff">Sky</option>
-                    <option value="#51a2ff">Blue</option>
-                    <option value="#7c86ff">Indigo</option>
-                    <option value="#a684ff">Violet</option>
-                    <option value="#c27aff">Purple</option>
-                    <option value="#ed6bff">Fuchsia</option>
-                    <option value="#fb64b6">Pink</option>
-                    <option value="#ff637e">Rose</option>
+                    <!-- omg again!?!? -->
+                    <option value="#cc99ff">Laserviolet</option>
+                    <!-- teehee -->
+                    <option value="#e83d84">Rosa</option>
+                    <!-- More specific -->
+                    <!-- Also used by TMEIT... I think????  -->
+                    <option value="#44687d">Silicone blue</option>
+                    <!-- "Fun" fact: The lighter ITK shade is not well-defined! -->
+                    <option value="#acff5b">ITK Green</option>
+                    <option value="#800000">QMISK Ockraröd</option>
+
+                    <option value="#004791">KTH-Blue</option>
+                    <option value="#45b8da">THS-Blue</option>
+                    <!-- In case I graduate before we share the new locale -->
+                    <option value="#a2ee8d">TBas Green</option>
                 </datalist>
             </div>
 
