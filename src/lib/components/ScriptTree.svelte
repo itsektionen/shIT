@@ -13,13 +13,16 @@
 </script>
 
 <script lang="ts">
-    import { SvelteSet } from "svelte/reactivity";
-    import ScriptTree from "./ScriptTree.svelte";
-
     import FileIcon from "@iconify-svelte/material-symbols/description-rounded";
     import FolderClosedIcon from "@iconify-svelte/material-symbols/folder-rounded";
     import FolderOpenIcon from "@iconify-svelte/material-symbols/folder-open-rounded";
+    import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
+
+    import { SvelteSet } from "svelte/reactivity";
+    import ScriptTree from "./ScriptTree.svelte";
     import { runScript } from "$lib/lmixer.remote";
+    import { createButton } from "$lib/db.remote";
+    import { getCollectionContext } from "$lib/context";
 
     function constructTree(paths: string[]): TreeNode[] {
         const tree: TreeNode[] = [];
@@ -95,6 +98,8 @@
             expandedNodes.add(processedTree[0].name);
         }
     });
+
+    let collection = getCollectionContext();
 </script>
 
 <!-- TODO: Turn into an accessible tree view. Requires some effort for to-spec keyboard navigation though -->
@@ -130,13 +135,13 @@
                 {/if}
             </li>
         {:else}
-            <li>
+            <li class="flex flex-row items-center gap-1 border-secondary pointer-coarse:border-b">
                 <button
                     data-path={node.path}
                     class={[
-                        "flex size-full items-center gap-1 p-0.5",
+                        "flex grow flex-row items-center gap-1 p-0.5",
                         "cursor-grab hover:bg-secondary focus:bg-secondary",
-                        "border-secondary pointer-coarse:border-b pointer-coarse:py-2",
+                        "pointer-coarse:py-2",
                     ]}
                     onclick={() => {
                         runScript(node.path);
@@ -150,8 +155,29 @@
                     }}
                 >
                     <FileIcon class="size-[1lh] opacity-50" />
-                    {node.name}
+                    <span class="truncate">{node.name}</span>
                 </button>
+                <!-- Touch-friendly add button -->
+                {#if collection.current}
+                    <button
+                        class={[
+                            "size-8 p-0.5 not-pointer-coarse:hidden",
+                            "bg-secondary hover:bg-secondary/60 focus:bg-secondary/60",
+                        ]}
+                        onclick={() => {
+                            if (!collection.current) {
+                                console.error("Tried adding script to null collection");
+                                return;
+                            }
+                            createButton({
+                                collectionId: collection.current.id,
+                                scriptPath: node.path,
+                            });
+                        }}
+                    >
+                        <AddIcon class="size-full" />
+                    </button>
+                {/if}
             </li>
         {/if}
     {/each}

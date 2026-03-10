@@ -73,8 +73,8 @@
         />
     </header>
 
-    <div class="relative w-full grow overflow-y-auto">
-        <div class="sidebar-contents flex h-full w-full flex-col p-2">
+    <div class="relative w-full grow">
+        <div class="sidebar-contents size-full flex flex-col p-2 overflow-y-auto">
             {@render children()}
         </div>
     </div>
@@ -97,7 +97,6 @@
             position: absolute;
             top: 0;
             right: 0;
-            overflow-x: hidden;
         }
     }
 

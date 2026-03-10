@@ -13,9 +13,15 @@
     import { createCollection, getCollections } from "$lib/db.remote";
     import { MediaQuery } from "svelte/reactivity";
     import { onMount } from "svelte";
-    import { getScriptsContext, setScriptsContext } from "$lib/context";
+    import { getScriptsContext, setCollectionContext, setScriptsContext } from "$lib/context";
 
-    let { params, children }: LayoutProps = $props();
+    let { data, params, children }: LayoutProps = $props();
+
+    let collectionCtx = $state<ReturnType<typeof setCollectionContext>>({ current: undefined });
+    $effect(() => {
+        collectionCtx.current = data.currentCollection;
+    });
+    setCollectionContext(collectionCtx);
 
     const acronyms: string[] = acronymsString
         .split("\n")
@@ -144,7 +150,7 @@
             />
         {/snippet}
 
-        <div class="flex h-full w-full flex-col overflow-auto px-1 py-2 text-sm select-none">
+        <div class="flex size-full flex-col text-sm">
             <ScriptTree
                 scriptPaths={scriptQuery
                     ? fuzzysort
