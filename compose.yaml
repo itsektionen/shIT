@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: file:/var/lib/shIT/data/shIT.db
+      MQTT_URL: ${MQTT_URL}
+      ORIGIN: ${ORIGIN}
+    ports:
+      - "3000:3000"
+    volumes:
+      - $PWD/data:/var/lib/shIT/data:rw
