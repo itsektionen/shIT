@@ -28,7 +28,6 @@
         "@tailwindcss/vite": "^4.2.1",
         "@types/node": "^24",
         "@types/sortablejs": "^1.15.9",
-        "drizzle-orm": "^0.45.1",
         "eslint": "^10.0.2",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-svelte": "^3.14.0",
@@ -50,6 +49,7 @@
     },
     "dependencies": {
         "@libsql/client": "^0.17.0",
-        "drizzle-kit": "^0.31.8"
+        "drizzle-kit": "^0.31.8",
+        "drizzle-orm": "^0.45.1"
     }
 }

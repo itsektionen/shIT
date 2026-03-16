@@ -1,5 +1,5 @@
 services:
-  app:
+  shit:
     build: .
     restart: unless-stopped
     environment:
