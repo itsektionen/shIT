@@ -19,10 +19,11 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
+# these are needed purely for the app to build.
+ARG MQTT_URL=mqtt:
+ARG DATABASE_URL=file:
 # build
 ENV NODE_ENV=production
-ENV MQTT_URL=mqtt:
-ENV DATABASE_URL=file:
 RUN bun run prepare
 RUN bun run build
 

@@ -1,5 +1,6 @@
 import { mqttClient } from "$lib/server/mqtt";
 import EventEmitter from "events";
+import type { RequestHandler } from "./$types";
 
 const TOPIC = "light_mixer/code/scripts/";
 
@@ -25,7 +26,7 @@ mqttClient.on("message", (topic) => {
     }
 });
 
-export function GET({ request }) {
+export const GET: RequestHandler = ({ request }) => {
     let listener: ((scripts: string[]) => void) | null = null;
     const stream = new ReadableStream({
         start(controller) {
@@ -52,4 +53,4 @@ export function GET({ request }) {
             Connection: "keep-alive",
         },
     });
-}
+};
