@@ -7,3 +7,6 @@ export const mqttClient = mqtt.connect(env.MQTT_URL);
 mqttClient.on("connect", () => {
     console.log("Successfully connected to MQTT broker at", env.MQTT_URL);
 });
+mqttClient.on("error", (err) => {
+    console.error("MQTT client error:", err);
+});

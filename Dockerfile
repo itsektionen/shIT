@@ -38,6 +38,7 @@ COPY --from=prerelease /usr/src/app/drizzle ./drizzle
 COPY --from=prerelease /usr/src/app/drizzle.config.ts .
 
 # run the app
-USER bun
 EXPOSE 3000/tcp
-CMD bun run db:migrate && echo "" &&bun run build/index.js
+ENV PROTOCOL_HEADER=x-forwarded-proto 
+ENV HOST_HEADER=x-forwarded-host
+CMD bun run db:migrate && echo "" && bun run build/index.js
