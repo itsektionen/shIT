@@ -22,5 +22,11 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# Compiled JS output from TypeScript sources
+**/*.js.map
+drizzle.config.js
+vite.config.js
+src/**/*.js
+
 # SQLite
 *.db
