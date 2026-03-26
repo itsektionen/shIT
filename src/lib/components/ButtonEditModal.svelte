@@ -14,7 +14,6 @@
     import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
     import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
-    import ClearColorIcon from "@iconify-svelte/material-symbols/format-color-reset-rounded";
 
     import ScriptButton from "./ScriptButton.svelte";
     import type { buttonTable } from "$lib/server/db/schema";
@@ -47,6 +46,30 @@
     }
 
     let scripts = getScriptsContext();
+
+    const colors = [
+        ["#000000", "Black"],
+        ["#777777", "Grey"],
+        ["#ffffff", "White"],
+        [],
+        ["#ff6467", "Red"],
+        ["#ff8904", "Orange"],
+        ["#fcc800", "Yellow"],
+        ["#9ae600", "Lime"],
+        ["#05df72", "Green"],
+        ["#00d5be", "Teal"],
+        ["#00bcff", "Sky"],
+        ["#cc99ff", "Laserviolet"],
+        ["#e83d84", "Rosa"],
+        [],
+        ["#cc99ff", "Laserviolet"],
+        ["#44687d", "Silicone blue"],
+        ["#acff5b", "ITK Green"],
+        ["#800000", "QMISK Ockraröd"],
+        ["#004791", "KTH-Blue"],
+        ["#45b8da", "THS-Blue"],
+        ["#a2ee8d", "TBas Green"],
+    ] as const;
 </script>
 
 {#if activeButton !== undefined}
@@ -184,72 +207,65 @@
                 <label for="{uid}-color" class="flex items-center gap-1 font-semibold">
                     <ColorIcon class="size-[1lh]" />
                     <span class="grow">Color</span>
-                    {#if activeButton.color}
-                        <button
-                            type="button"
-                            class="bg-transparent p-1 text-foreground opacity-50 transition-opacity hover:opacity-100 focus:ring focus:outline-none"
-                            onclick={() => {
-                                if (activeButton) activeButton.color = null;
-                            }}
-                        >
-                            <ClearColorIcon class="size-[1lh]" />
-                        </button>
-                    {/if}
                 </label>
                 {#each editButton.fields.color.issues() as issue, i (i)}
                     <span class="text-sm text-red-400">{issue.message}</span>
                 {/each}
-                <div
-                    class="relative h-10 w-full border ring-brand focus-within:ring"
-                    style:background={activeButton.color ?? "var(--color-secondary)"}
-                >
-                    <input
-                        type="color"
-                        value={activeButton.color || "#808080"}
-                        oninput={(event) => {
-                            if (activeButton) activeButton.color = event.currentTarget.value;
+                <div class="flex flex-wrap">
+                    <button
+                        type="button"
+                        title="Default"
+                        class={[
+                            "m-0.5 size-6 cursor-pointer rounded border-2 bg-secondary",
+                            activeButton.color === null ? "border-brand" : "",
+                        ]}
+                        onclick={() => {
+                            if (activeButton) activeButton.color = null;
                         }}
-                        id="{uid}-color"
-                        class="absolute inset-0 size-full cursor-pointer opacity-0"
-                        list="{uid}-color-suggestions"
-                    />
-                    <!-- Similar hack to be able to submit null colors -->
-                    <input
-                        {...editButton.fields.color.as("hidden", "text")}
-                        value={activeButton.color || ""}
-                    />
-                </div>
-                <datalist id="{uid}-color-suggestions">
-                    <!-- Our beloved -->
-                    <option value="#cc99ff">Laserviolet</option>
-                    <!-- Greyscale -->
-                    <option value="#000000">Black</option>
-                    <option value="#777777">Grey</option>
-                    <option value="#ffffff">White</option>
-                    <!-- Primitives, mostly stripped-down tailwind -->
-                    <option value="#ff6467">Red</option>
-                    <option value="#ff8904">Orange</option>
-                    <option value="#fcc800">Yellow</option>
-                    <option value="#9ae600">Lime</option>
-                    <option value="#05df72">Green</option>
-                    <option value="#00d5be">Teal</option>
-                    <option value="#00bcff">Sky</option>
-                    <!-- omg again!?!? -->
-                    <option value="#cc99ff">Laserviolet</option>
-                    <!-- teehee -->
-                    <option value="#e83d84">Rosa</option>
-                    <!-- More specific -->
-                    <!-- Also used by TMEIT... I think????  -->
-                    <option value="#44687d">Silicone blue</option>
-                    <!-- "Fun" fact: The lighter ITK shade is not well-defined! -->
-                    <option value="#acff5b">ITK Green</option>
-                    <option value="#800000">QMISK Ockraröd</option>
+                    >
+                    </button>
 
-                    <option value="#004791">KTH-Blue</option>
-                    <option value="#45b8da">THS-Blue</option>
-                    <!-- In case I graduate before we share the new locale -->
-                    <option value="#a2ee8d">TBas Green</option>
-                </datalist>
+                    <div
+                        class={[
+                            "rainbow-gradient relative m-0.5 size-6 rounded border-2",
+                            activeButton?.color &&
+                            !colors.some(([color]) => color === activeButton?.color)
+                                ? "border-brand"
+                                : "",
+                        ]}
+                    >
+                        <input
+                            id="{uid}-color"
+                            {...editButton.fields.color.as("color")}
+                            class="absolute inset-0 size-full cursor-pointer opacity-0"
+                            title="Custom"
+                            value={activeButton.color ?? "#000000"}
+                            oninput={(event) => {
+                                if (activeButton) activeButton.color = event.currentTarget.value;
+                            }}
+                        />
+                    </div>
+
+                    {#each colors as [color, name], i (i)}
+                        {#if color}
+                            <button
+                                type="button"
+                                title={name}
+                                class={[
+                                    "m-0.5 size-6 cursor-pointer rounded border-2",
+                                    activeButton.color === color ? "border-brand" : "",
+                                ]}
+                                style:background-color={color}
+                                onclick={() => {
+                                    if (activeButton) activeButton.color = color;
+                                }}
+                            >
+                            </button>
+                        {:else}
+                            <div class="w-full shrink"></div>
+                        {/if}
+                    {/each}
+                </div>
             </div>
 
             <!-- Script field -->
@@ -315,3 +331,9 @@
         </form>
     </dialog>
 {/if}
+
+<style>
+    .rainbow-gradient {
+        background: conic-gradient(in oklch longer hue, oklch(0.75 0.12 0), oklch(0.75 0.12 0));
+    }
+</style>
