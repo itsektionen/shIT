@@ -285,8 +285,10 @@
                 />
             </div>
 
+            <!-- Action buttons -->
             <div class="flex justify-end gap-2">
                 <button
+                    type="button"
                     class="bg-red-400 px-2 py-1 text-black"
                     onclick={() => {
                         if (activeButton) {
@@ -300,6 +302,7 @@
                     Delete
                 </button>
                 <button
+                    type="button"
                     class="bg-gray-400 px-2 py-1 text-black"
                     onclick={() => {
                         activeButton = undefined;
@@ -307,7 +310,7 @@
                 >
                     Cancel
                 </button>
-                <button class="bg-green-400 px-2 py-1 text-black"> Save </button>
+                <button type="submit" class="bg-green-400 px-2 py-1 text-black"> Save </button>
             </div>
         </form>
     </dialog>
