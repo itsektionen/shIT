@@ -43,6 +43,13 @@
     let collectionQuery = $state("");
     let scriptQuery = $state("");
 
+    let searchedPaths: string[] = $derived.by(() => {
+        const paths = getScriptsContext().paths ?? [];
+        return scriptQuery
+            ? fuzzysort.go(scriptQuery, paths).map((result) => result.target)
+            : paths;
+    });
+
     let leftSidebar: Sidebar;
     let rightSidebar: Sidebar;
 
@@ -151,13 +158,7 @@
         {/snippet}
 
         <div class="flex size-full flex-col text-sm">
-            <ScriptTree
-                scriptPaths={scriptQuery
-                    ? fuzzysort
-                          .go(scriptQuery, getScriptsContext().paths ?? [])
-                          .map((r) => r.target)
-                    : (getScriptsContext().paths ?? [])}
-            />
+            <ScriptTree scriptPaths={searchedPaths} expandAll={!!scriptQuery} />
         </div>
     </Sidebar>
 </div>
