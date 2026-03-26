@@ -26,7 +26,10 @@
     const uid = $props.id();
 
     let activeButton = $state<Button | undefined>(undefined);
+    let openedAt = 0;
+
     export function edit(button: Button) {
+        openedAt = Date.now();
         activeButton = $state.snapshot(button);
         editButton.fields.set({
             id: button.id,
@@ -78,7 +81,15 @@
             element.showModal();
             return () => element.close();
         }}
-        closedby="closerequest"
+        closedby="any"
+        oncancel={(event) => {
+            // Prevent instant closing from clicking the backdrop after being just opened
+            // Cuases issues with mobile long press opening
+            const timeSinceOpen = Date.now() - openedAt;
+            if (timeSinceOpen < 300) {
+                event.preventDefault();
+            }
+        }}
         onclose={() => {
             activeButton = undefined;
         }}
