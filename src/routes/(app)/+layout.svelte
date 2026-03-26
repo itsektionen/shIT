@@ -115,7 +115,7 @@
 
     <div class="flex grow flex-col overflow-y-auto">
         <header
-            class="sticky top-0 flex h-12 shrink-0 flex-row items-center justify-center gap-2 bg-secondary px-2"
+            class="sticky top-0 flex h-12 shrink-0 flex-row items-center justify-center gap-2 bg-secondary px-2 z-10"
         >
             <SidebarToggleButton
                 bind:open={
