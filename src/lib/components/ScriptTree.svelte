@@ -22,7 +22,7 @@
     import ScriptTree from "./ScriptTree.svelte";
     import { runScript } from "$lib/lmixer.remote";
     import { createButton } from "$lib/db.remote";
-    import { getCollectionContext } from "$lib/context";
+    import { confirmScriptExecution, getCollectionContext } from "$lib/context";
 
     function constructTree(paths: string[]): TreeNode[] {
         const tree: TreeNode[] = [];
@@ -136,7 +136,9 @@
                         "pointer-coarse:py-2",
                     ]}
                     onclick={() => {
-                        runScript(node.path);
+                        if (confirmScriptExecution(node.name)) {
+                            runScript(node.path);
+                        }
                     }}
                     draggable="true"
                     ondragstart={(event) => {
