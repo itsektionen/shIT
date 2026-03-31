@@ -18,11 +18,11 @@
     import FolderOpenIcon from "@iconify-svelte/material-symbols/folder-open-rounded";
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
 
-    import { SvelteSet } from "svelte/reactivity";
+    import { SvelteMap } from "svelte/reactivity";
     import ScriptTree from "./ScriptTree.svelte";
     import { runScript } from "$lib/lmixer.remote";
     import { createButton } from "$lib/db.remote";
-    import { getCollectionContext } from "$lib/context";
+    import { confirmScriptExecution, getCollectionContext } from "$lib/context";
 
     function constructTree(paths: string[]): TreeNode[] {
         const tree: TreeNode[] = [];
@@ -73,10 +73,12 @@
     let {
         isRoot = true,
         pathPrefix = "",
+        expandAll = false,
         ...props
     }: {
         isRoot?: boolean;
         pathPrefix?: string;
+        expandAll?: boolean;
     } & ({ scriptPaths: string[] } | { scriptTree: TreeNode[] }) = $props();
 
     let processedTree: TreeNode[] = $derived(
@@ -90,47 +92,37 @@
                   }),
               ),
     );
-
-    let expandedNodes = new SvelteSet();
-    // If we only have a single node, make it expanded by default
-    $effect(() => {
-        if (processedTree.length === 1 && processedTree[0].type === "directory") {
-            expandedNodes.add(processedTree[0].name);
-        }
-    });
-
+    let nodeExpansions = new SvelteMap<string, boolean>();
     let collection = getCollectionContext();
 </script>
 
 <!-- TODO: Turn into an accessible tree view. Requires some effort for to-spec keyboard navigation though -->
 <ul class="flex flex-col" role={isRoot ? "tree" : "group"}>
     {#each processedTree as node (node.name)}
+        {@const shouldExpand = nodeExpansions.get(node.name) ?? expandAll}
         {#if node.type === "directory"}
-            <li class="flex flex-col" data-expanded={expandedNodes.has(node.name)}>
+            <li class="flex flex-col" data-expanded={shouldExpand}>
                 <button
                     class={[
                         "flex size-full items-center gap-1 p-0.5",
-                        "cursor-pointer hover:bg-secondary focus:bg-secondary",
+                        "hover:bg-secondary focus:bg-secondary",
                         "border-secondary pointer-coarse:border-b pointer-coarse:py-2",
+                        !expandAll && "cursor-pointer",
                     ]}
                     onclick={() => {
-                        if (expandedNodes.has(node.name)) {
-                            expandedNodes.delete(node.name);
-                        } else {
-                            expandedNodes.add(node.name);
-                        }
+                        nodeExpansions.set(node.name, !shouldExpand);
                     }}
                 >
-                    {#if expandedNodes.has(node.name)}
-                        <FolderOpenIcon class="size-[1lh] opacity-50" />
+                    {#if shouldExpand}
+                        <FolderOpenIcon class="size-[1lh] shrink-0 opacity-50" />
                     {:else}
-                        <FolderClosedIcon class="size-[1lh] opacity-50" />
+                        <FolderClosedIcon class="size-[1lh] shrink-0 opacity-50" />
                     {/if}
-                    {node.name}/
+                    <span class="truncate">{node.name}/</span>
                 </button>
-                {#if expandedNodes.has(node.name)}
+                {#if shouldExpand}
                     <div class="border-l pl-[0.8lh]">
-                        <ScriptTree scriptTree={node.children} isRoot={false} />
+                        <ScriptTree scriptTree={node.children} isRoot={false} {expandAll} />
                     </div>
                 {/if}
             </li>
@@ -139,12 +131,14 @@
                 <button
                     data-path={node.path}
                     class={[
-                        "flex grow flex-row items-center gap-1 p-0.5",
+                        "flex grow flex-row items-center gap-1 truncate p-0.5",
                         "cursor-grab hover:bg-secondary focus:bg-secondary",
                         "pointer-coarse:py-2",
                     ]}
                     onclick={() => {
-                        runScript(node.path);
+                        if (confirmScriptExecution(node.name)) {
+                            runScript(node.path);
+                        }
                     }}
                     draggable="true"
                     ondragstart={(event) => {

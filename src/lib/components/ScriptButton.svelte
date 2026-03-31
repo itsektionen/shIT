@@ -6,7 +6,7 @@
     import { onLongPress } from "$lib/attachments/longpress";
     import type { buttonTable } from "$lib/server/db/schema";
     import { runScript } from "$lib/lmixer.remote";
-    import { getScriptsContext } from "$lib/context";
+    import { confirmScriptExecution, getScriptsContext } from "$lib/context";
 
     type Button = typeof buttonTable.$inferSelect;
 
@@ -34,7 +34,9 @@
     <button
         class="size-full cursor-pointer truncate overflow-hidden px-4 text-xl font-semibold"
         onclick={() => {
-            runScript(btn.script);
+            if (confirmScriptExecution(btn.label)) {
+                runScript(btn.script);
+            }
         }}
         // Allow editing via long press on touch devices
         {@attach onLongPress(500, () => onEdit?.(btn))}
