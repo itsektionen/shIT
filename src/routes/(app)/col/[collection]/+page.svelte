@@ -7,6 +7,7 @@
 
     import type { PageProps } from "./$types";
     import { createButton, getButtons, reorderButtons } from "$lib/db.remote";
+    import { getEditModeContext } from "$lib/context";
 
     let { data }: PageProps = $props();
 
@@ -41,6 +42,7 @@
     };
 
     let editingModal: ButtonEditModal;
+    let editMode = getEditModeContext();
 </script>
 
 <svelte:head>
@@ -69,7 +71,7 @@
             "grid grid-cols-[repeat(auto-fit,calc(var(--spacing)*64))]",
             "grow items-center justify-center gap-2 p-4",
         ]}
-        {@attach sortable}
+        {@attach editMode.isEditing ? sortable : undefined}
     >
         {#each await getButtons(data.currentCollection.id) as btn (btn.id)}
             <li class="flex h-full flex-row justify-center">

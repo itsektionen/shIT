@@ -13,7 +13,18 @@
     import { createCollection, getCollections } from "$lib/db.remote";
     import { MediaQuery } from "svelte/reactivity";
     import { onMount } from "svelte";
-    import { getScriptsContext, setCollectionContext, setScriptsContext } from "$lib/context";
+    import {
+        getScriptsContext,
+        setCollectionContext,
+        setEditModeContext,
+        setScriptsContext,
+    } from "$lib/context";
+    import EditModeButton from "$lib/components/EditModeButton.svelte";
+
+    let editMode = $state({
+        isEditing: false,
+    });
+    setEditModeContext(editMode);
 
     let { data, params, children }: LayoutProps = $props();
 
@@ -115,7 +126,7 @@
 
     <div class="flex grow flex-col overflow-y-auto">
         <header
-            class="sticky top-0 flex h-12 shrink-0 flex-row items-center justify-center gap-2 bg-secondary px-2 z-10"
+            class="sticky top-0 z-10 flex h-12 w-full shrink-0 flex-row items-center justify-center gap-2 bg-secondary px-2"
         >
             <SidebarToggleButton
                 bind:open={
@@ -124,16 +135,20 @@
                 side="left"
                 class="lg:hidden"
             />
-            <span class="grow"></span>
-
-            <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
-            <h1>shIT</h1>
-            <img src={logo} alt="SMN Logo" class="size-8" />
-            <span class="truncate text-2xl text-nowrap not-lg:hidden">
-                {acronyms[Math.floor(Math.random() * acronyms.length)]}
+            <span class="grid max-w-full shrink grow grid-cols-[1fr_auto_1fr]">
+                <div class="min-w-[1fr] shrink-0"></div>
+                <span
+                    class="col-start-2 flex flex-row items-center justify-center gap-2 overflow-hidden"
+                >
+                    <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
+                    <h1>shIT</h1>
+                    <img src={logo} alt="SMN Logo" class="size-8" />
+                    <span class="truncate text-2xl text-nowrap not-lg:hidden">
+                        {acronyms[Math.floor(Math.random() * acronyms.length)]}
+                    </span>
+                </span>
+                <EditModeButton />
             </span>
-
-            <span class="grow"></span>
             <SidebarToggleButton
                 bind:open={
                     () => rightSidebar?.isOpen() ?? false, (value) => rightSidebar?.setOpen(value)
