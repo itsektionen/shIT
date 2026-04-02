@@ -6,12 +6,14 @@
     import Sidebar from "$lib/components/Sidebar.svelte";
     import SidebarToggleButton from "$lib/components/SidebarToggleButton.svelte";
     import ScriptTree from "$lib/components/ScriptTree.svelte";
+    import EditModeButton from "$lib/components/EditModeButton.svelte";
+    import CollectionButton from "$lib/components/buttons/CollectionButton.svelte";
+    import CollectionEditModal from "$lib/components/CollectionEditModal.svelte";
 
     import acronymsString from "$lib/acronyms.txt?raw";
     import logo from "$lib/assets/SMN Logo.svg";
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
     import { createCollection, getCollections } from "$lib/db.remote";
-    import { MediaQuery } from "svelte/reactivity";
     import { onMount } from "svelte";
     import {
         getScriptsContext,
@@ -19,7 +21,6 @@
         setEditModeContext,
         setScriptsContext,
     } from "$lib/context";
-    import EditModeButton from "$lib/components/EditModeButton.svelte";
 
     let editMode = $state({
         isEditing: false,
@@ -63,9 +64,10 @@
 
     let leftSidebar: Sidebar;
     let rightSidebar: Sidebar;
-
-    const isWideQuery = new MediaQuery("(min-width: 64rem)");
+    let editingModal: CollectionEditModal;
 </script>
+
+<CollectionEditModal bind:this={editingModal} />
 
 <div class="flex h-full flex-row justify-center">
     <Sidebar side="left" bind:this={leftSidebar}>
@@ -85,19 +87,13 @@
                       .map((r) => r.obj) : await getCollections() as collection (collection.id)}
                 {@const isCurrent = collection.id === params.collection}
                 <li>
-                    <a
-                        class={[
-                            "flex min-h-12 w-full items-center justify-center hover:opacity-80",
-                            isCurrent ? "bg-brand/20" : "bg-secondary",
-                        ]}
-                        href={resolve(isCurrent ? "/" : `/col/${collection.id}`)}
-                        tabindex="0"
-                        onclick={() => {
-                            if (!isWideQuery.current) leftSidebar.setOpen(false);
+                    <CollectionButton
+                        col={collection}
+                        {isCurrent}
+                        onEdit={() => {
+                            editingModal.edit(collection);
                         }}
-                    >
-                        <span class="truncate px-1 text-lg">{collection.label}</span>
-                    </a>
+                    />
                 </li>
             {/each}
             <li>

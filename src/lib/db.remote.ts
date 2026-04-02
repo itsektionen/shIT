@@ -6,6 +6,7 @@ import * as vb from "valibot";
 import { redirect } from "@sveltejs/kit";
 import path from "path";
 import { buttonEditSchema } from "$lib/components/ButtonEditModal.svelte";
+import { collectionEditSchema } from "./components/CollectionEditModal.svelte";
 
 export const getCollections = query(async () => {
     return await db.select().from(collectionTable);
@@ -20,6 +21,14 @@ export const createCollection = form(
         redirect(303, `/col/${result[0].id}`);
     },
 );
+export const editCollection = form(collectionEditSchema, async ({ id, ...newData }) => {
+    await db.update(collectionTable).set(newData).where(eq(collectionTable.id, id));
+    await getCollections().refresh();
+});
+export const deleteCollection = command(vb.string(), async (id) => {
+    await db.delete(collectionTable).where(eq(collectionTable.id, id));
+    await getCollections().refresh();
+});
 
 export const getButtons = query(vb.string(), async (collectionId) => {
     return await db

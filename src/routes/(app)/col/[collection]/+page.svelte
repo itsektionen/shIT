@@ -2,12 +2,12 @@
     import Sortable from "sortablejs";
     import type { Attachment } from "svelte/attachments";
 
-    import ScriptButton from "$lib/components/ScriptButton.svelte";
     import ButtonEditModal from "$lib/components/ButtonEditModal.svelte";
 
     import type { PageProps } from "./$types";
     import { createButton, getButtons, reorderButtons } from "$lib/db.remote";
     import { getEditModeContext } from "$lib/context";
+    import ScriptButton from "$lib/components/buttons/ScriptButton.svelte";
 
     let { data }: PageProps = $props();
 
@@ -68,7 +68,7 @@
 >
     <ul
         class={[
-            "grid grid-cols-[repeat(auto-fit,calc(var(--spacing)*64))]",
+            "grid grid-cols-[repeat(auto-fit,--spacing(64))]",
             "grow items-center justify-center gap-2 p-4",
         ]}
         {@attach editMode.isEditing ? sortable : undefined}

@@ -8,7 +8,6 @@
     import { confirmScriptExecution, getScriptsContext, getEditModeContext } from "$lib/context";
 
     type Button = typeof buttonTable.$inferSelect;
-
     let {
         btn,
         onEdit,
@@ -25,7 +24,8 @@
 
 <div
     class={[
-        "group relative flex min-h-16 w-64 items-center justify-center text-wrap select-none",
+        "group relative min-h-16 w-64 text-wrap select-none",
+        "flex flex-row items-center justify-center",
         "bg-secondary hover:opacity-80 **:focus-visible:opacity-80 has-[>:first-child:active]:scale-95",
         btn.color && "text-contrast",
     ]}
@@ -43,8 +43,6 @@
                 }
             }
         }}
-        // Allow editing via long press on touch devices
-        oncontextmenu={(event) => event.preventDefault()}
     >
         {#if btn.iconId}
             <Icon icon={btn.iconId} class="inline-block size-[1.5lh]" />
@@ -54,31 +52,19 @@
     {#if onEdit || isInvalidScript}
         <button
             class={[
-                "absolute top-0 right-0 flex h-6 min-w-6 cursor-pointer items-center gap-0.5",
+                "absolute top-0 right-0 flex h-6 min-w-6 cursor-pointer items-center",
                 isInvalidScript
                     ? ""
-                    : "group-focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0 pointer-coarse:hidden",
+                    : "not-pointer-coarse:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 pointer-coarse:hidden",
             ]}
             title={isInvalidScript ? "Script not found" : "Edit button"}
             onclick={() => onEdit?.(btn)}
         >
             {#if isInvalidScript}
-                <WarnIcon class="inline-block size-6" />
+                <WarnIcon class="size-6" />
             {:else}
-                <EditIcon />
+                <EditIcon class="size-6" />
             {/if}
         </button>
     {/if}
 </div>
-
-<style>
-    .text-contrast {
-        color: contrast-color(var(--bg));
-        /* Not yet widely supported :/ as of writing (Feb. 2026) */
-        @supports not (color: contrast-color(red)) {
-            color: hwb(
-                from oklch(from var(--bg) l 0 0) h calc(((b - 50) * 999)) calc(((w - 50) * 999))
-            );
-        }
-    }
-</style>
