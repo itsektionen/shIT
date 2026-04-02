@@ -3,10 +3,9 @@
     import WarnIcon from "@iconify-svelte/material-symbols/warning-rounded";
 
     import Icon from "@iconify/svelte";
-    import { onLongPress } from "$lib/attachments/longpress";
     import type { buttonTable } from "$lib/server/db/schema";
     import { runScript } from "$lib/lmixer.remote";
-    import { confirmScriptExecution, getScriptsContext } from "$lib/context";
+    import { confirmScriptExecution, getScriptsContext, getEditModeContext } from "$lib/context";
 
     type Button = typeof buttonTable.$inferSelect;
 
@@ -20,6 +19,8 @@
 
     let scripts = getScriptsContext();
     let isInvalidScript = $derived(scripts.paths && !scripts.paths.includes(btn.script));
+
+    let editMode = getEditModeContext();
 </script>
 
 <div
@@ -34,12 +35,15 @@
     <button
         class="size-full cursor-pointer truncate overflow-hidden px-4 text-xl font-semibold"
         onclick={() => {
-            if (confirmScriptExecution(btn.label)) {
-                runScript(btn.script);
+            if (editMode.isEditing) {
+                onEdit?.(btn);
+            } else {
+                if (confirmScriptExecution(btn.label)) {
+                    runScript(btn.script);
+                }
             }
         }}
         // Allow editing via long press on touch devices
-        {@attach onLongPress(500, () => onEdit?.(btn))}
         oncontextmenu={(event) => event.preventDefault()}
     >
         {#if btn.iconId}
