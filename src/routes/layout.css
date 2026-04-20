@@ -46,6 +46,16 @@ body {
     @apply focus:bg-brand/10 focus:text-brand;
 }
 
+.text-contrast {
+    color: contrast-color(var(--bg));
+    /* Not yet widely supported :/ as of writing (Feb. 2026) */
+    @supports not (color: contrast-color(red)) {
+        color: hwb(
+            from oklch(from var(--bg) l 0 0) h calc(((b - 50) * 999)) calc(((w - 50) * 999))
+        );
+    }
+}
+
 @layer components {
     input {
         @apply border bg-background px-2 py-1 text-foreground;

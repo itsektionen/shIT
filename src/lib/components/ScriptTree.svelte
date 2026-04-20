@@ -22,7 +22,7 @@
     import ScriptTree from "./ScriptTree.svelte";
     import { runScript } from "$lib/lmixer.remote";
     import { createButton } from "$lib/db.remote";
-    import { confirmScriptExecution, getCollectionContext } from "$lib/context";
+    import { confirmScriptExecution, getCollectionContext, getEditModeContext } from "$lib/context";
 
     function constructTree(paths: string[]): TreeNode[] {
         const tree: TreeNode[] = [];
@@ -94,6 +94,7 @@
     );
     let nodeExpansions = new SvelteMap<string, boolean>();
     let collection = getCollectionContext();
+    let editMode = getEditModeContext();
 </script>
 
 <!-- TODO: Turn into an accessible tree view. Requires some effort for to-spec keyboard navigation though -->
@@ -136,6 +137,7 @@
                         "pointer-coarse:py-2",
                     ]}
                     onclick={() => {
+                        if (editMode.isEditing) return;
                         if (confirmScriptExecution(node.name)) {
                             runScript(node.path);
                         }
@@ -143,6 +145,10 @@
                     draggable="true"
                     ondragstart={(event) => {
                         if (!event.dataTransfer) return;
+                        if (!editMode.isEditing) {
+                            event.preventDefault();
+                            return;
+                        }
                         event.dataTransfer.effectAllowed = "link";
                         // Used by the main button area to load scripts as buttons.
                         event.dataTransfer.setData("lmixer/script", node.path);

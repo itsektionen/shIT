@@ -6,14 +6,26 @@
     import Sidebar from "$lib/components/Sidebar.svelte";
     import SidebarToggleButton from "$lib/components/SidebarToggleButton.svelte";
     import ScriptTree from "$lib/components/ScriptTree.svelte";
+    import EditModeButton from "$lib/components/EditModeButton.svelte";
+    import CollectionButton from "$lib/components/buttons/CollectionButton.svelte";
+    import CollectionEditModal from "$lib/components/CollectionEditModal.svelte";
 
     import acronymsString from "$lib/acronyms.txt?raw";
     import logo from "$lib/assets/SMN Logo.svg";
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
     import { createCollection, getCollections } from "$lib/db.remote";
-    import { MediaQuery } from "svelte/reactivity";
     import { onMount } from "svelte";
-    import { getScriptsContext, setCollectionContext, setScriptsContext } from "$lib/context";
+    import {
+        getScriptsContext,
+        setCollectionContext,
+        setEditModeContext,
+        setScriptsContext,
+    } from "$lib/context";
+
+    let editMode = $state({
+        isEditing: false,
+    });
+    setEditModeContext(editMode);
 
     let { data, params, children }: LayoutProps = $props();
 
@@ -52,9 +64,10 @@
 
     let leftSidebar: Sidebar;
     let rightSidebar: Sidebar;
-
-    const isWideQuery = new MediaQuery("(min-width: 64rem)");
+    let editingModal: CollectionEditModal;
 </script>
+
+<CollectionEditModal bind:this={editingModal} />
 
 <div class="flex h-full flex-row justify-center">
     <Sidebar side="left" bind:this={leftSidebar}>
@@ -74,19 +87,13 @@
                       .map((r) => r.obj) : await getCollections() as collection (collection.id)}
                 {@const isCurrent = collection.id === params.collection}
                 <li>
-                    <a
-                        class={[
-                            "flex min-h-12 w-full items-center justify-center hover:opacity-80",
-                            isCurrent ? "bg-brand/20" : "bg-secondary",
-                        ]}
-                        href={resolve(isCurrent ? "/" : `/col/${collection.id}`)}
-                        tabindex="0"
-                        onclick={() => {
-                            if (!isWideQuery.current) leftSidebar.setOpen(false);
+                    <CollectionButton
+                        col={collection}
+                        {isCurrent}
+                        onEdit={() => {
+                            editingModal.edit(collection);
                         }}
-                    >
-                        <span class="truncate px-1 text-lg">{collection.label}</span>
-                    </a>
+                    />
                 </li>
             {/each}
             <li>
@@ -115,7 +122,7 @@
 
     <div class="flex grow flex-col overflow-y-auto">
         <header
-            class="sticky top-0 flex h-12 shrink-0 flex-row items-center justify-center gap-2 bg-secondary px-2 z-10"
+            class="sticky top-0 z-10 flex h-12 w-full shrink-0 flex-row items-center justify-center gap-2 bg-secondary px-2"
         >
             <SidebarToggleButton
                 bind:open={
@@ -124,16 +131,20 @@
                 side="left"
                 class="lg:hidden"
             />
-            <span class="grow"></span>
-
-            <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
-            <h1>shIT</h1>
-            <img src={logo} alt="SMN Logo" class="size-8" />
-            <span class="truncate text-2xl text-nowrap not-lg:hidden">
-                {acronyms[Math.floor(Math.random() * acronyms.length)]}
+            <span class="grid max-w-full shrink grow grid-cols-[1fr_auto_1fr]">
+                <div class="min-w-[1fr] shrink-0"></div>
+                <span
+                    class="col-start-2 flex flex-row items-center justify-center gap-2 overflow-hidden"
+                >
+                    <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
+                    <h1>shIT</h1>
+                    <img src={logo} alt="SMN Logo" class="size-8" />
+                    <span class="truncate text-2xl text-nowrap not-lg:hidden">
+                        {acronyms[Math.floor(Math.random() * acronyms.length)]}
+                    </span>
+                </span>
+                <EditModeButton />
             </span>
-
-            <span class="grow"></span>
             <SidebarToggleButton
                 bind:open={
                     () => rightSidebar?.isOpen() ?? false, (value) => rightSidebar?.setOpen(value)

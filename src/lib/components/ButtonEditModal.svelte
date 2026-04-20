@@ -15,12 +15,12 @@
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
     import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
 
-    import ScriptButton from "./ScriptButton.svelte";
     import type { buttonTable } from "$lib/server/db/schema";
     import IconSearchResults from "./IconSearchResults.svelte";
     import { deleteButton, editButton, getButtons } from "$lib/db.remote";
     import Icon from "@iconify/svelte";
     import { getScriptsContext } from "$lib/context";
+    import ScriptButton from "./buttons/ScriptButton.svelte";
 
     type Button = typeof buttonTable.$inferSelect;
     const uid = $props.id();
@@ -151,9 +151,6 @@
                     required
                 />
             </div>
-            {#each editButton.fields.iconId.issues() as issue, i (i)}
-                <span class="text-sm text-red-400">{issue.message}</span>
-            {/each}
 
             <!-- Icon field -->
             <div class="flex flex-col gap-1">
