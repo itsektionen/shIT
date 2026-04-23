@@ -6,12 +6,9 @@
     import Sidebar from "$lib/components/Sidebar.svelte";
     import SidebarToggleButton from "$lib/components/SidebarToggleButton.svelte";
     import ScriptTree from "$lib/components/ScriptTree.svelte";
-    import EditModeButton from "$lib/components/buttons/EditModeButton.svelte";
     import CollectionButton from "$lib/components/buttons/CollectionButton.svelte";
     import CollectionEditModal from "$lib/components/CollectionEditModal.svelte";
 
-    import acronymsString from "$lib/acronyms.txt?raw";
-    import logo from "$lib/assets/SMN Logo.svg";
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
     import { createCollection, getCollections } from "$lib/db.remote";
     import { onMount } from "svelte";
@@ -21,6 +18,7 @@
         setEditModeContext,
         setScriptsContext,
     } from "$lib/context";
+    import TitleBar from "$lib/components/TitleBar.svelte";
 
     let editMode = $state({
         isEditing: false,
@@ -34,11 +32,6 @@
         collectionCtx.current = data.currentCollection;
     });
     setCollectionContext(collectionCtx);
-
-    const acronyms: string[] = acronymsString
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0);
 
     let scripts = $state<ReturnType<typeof setScriptsContext>>({ paths: undefined });
     setScriptsContext(scripts);
@@ -131,20 +124,7 @@
                 side="left"
                 class="lg:hidden"
             />
-            <span class="grid max-w-full shrink grow grid-cols-[1fr_auto_1fr]">
-                <div class="min-w-[1fr] shrink-0"></div>
-                <span
-                    class="col-start-2 flex flex-row items-center justify-center gap-2 overflow-hidden"
-                >
-                    <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
-                    <h1>shIT</h1>
-                    <img src={logo} alt="SMN Logo" class="size-8" />
-                    <span class="truncate text-2xl text-nowrap not-lg:hidden">
-                        {acronyms[Math.floor(Math.random() * acronyms.length)]}
-                    </span>
-                </span>
-                <EditModeButton />
-            </span>
+            <TitleBar />
             <SidebarToggleButton
                 bind:open={
                     () => rightSidebar?.isOpen() ?? false, (value) => rightSidebar?.setOpen(value)
