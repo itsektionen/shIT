@@ -1,12 +1,3 @@
-<script lang="ts" module>
-    import * as vb from "valibot";
-    export const collectionEditSchema = vb.object({
-        id: vb.string(),
-        label: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
-        color: vb.optional(vb.string()),
-    });
-</script>
-
 <script lang="ts">
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
@@ -25,7 +16,6 @@
 
     // svelte-ignore state_referenced_locally
     let activeCollection = $state($state.snapshot(passedCollection));
-    let openedAt = Date.now();
 
     onMount(() => {
         editCollection.fields.set({

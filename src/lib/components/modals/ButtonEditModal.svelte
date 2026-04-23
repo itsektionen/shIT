@@ -12,6 +12,7 @@
     import { getScriptsContext } from "$lib/context";
     import ScriptButton from "../buttons/ScriptButton.svelte";
     import { onMount } from "svelte";
+    import ColorSelector from "../ColorSelector.svelte";
 
     type Button = typeof buttonTable.$inferSelect;
     const uid = $props.id();
@@ -20,7 +21,6 @@
 
     // svelte-ignore state_referenced_locally
     let activeButton = $state($state.snapshot(passedButton));
-    let openedAt = Date.now();
 
     onMount(() => {
         // Initialize form fields once when component mounts
@@ -42,30 +42,6 @@
     }
 
     let scripts = getScriptsContext();
-
-    const colors = [
-        ["#000000", "Black"],
-        ["#777777", "Grey"],
-        ["#ffffff", "White"],
-        [],
-        ["#ff6467", "Red"],
-        ["#ff8904", "Orange"],
-        ["#fcc800", "Yellow"],
-        ["#9ae600", "Lime"],
-        ["#05df72", "Green"],
-        ["#00d5be", "Teal"],
-        ["#00bcff", "Sky"],
-        ["#cc99ff", "Laserviolet"],
-        ["#e83d84", "Rosa"],
-        [],
-        ["#cc99ff", "Laserviolet"],
-        ["#44687d", "Silicone blue"],
-        ["#acff5b", "ITK Green"],
-        ["#800000", "QMISK Ockraröd"],
-        ["#004791", "KTH-Blue"],
-        ["#45b8da", "THS-Blue"],
-        ["#a2ee8d", "TBas Green"],
-    ] as const;
 </script>
 
 <dialog
@@ -200,61 +176,16 @@
             {#each editButton.fields.color.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
-            <div class="flex flex-wrap">
-                <button
-                    type="button"
-                    title="Default"
-                    class={[
-                        "m-0.5 size-6 cursor-pointer rounded border-2 bg-secondary",
-                        activeButton.color === null ? "border-brand" : "",
-                    ]}
-                    onclick={() => {
-                        activeButton.color = null;
-                    }}
-                >
-                </button>
-
-                <div
-                    class={[
-                        "rainbow-gradient relative m-0.5 size-6 rounded border-2",
-                        activeButton?.color &&
-                        !colors.some(([color]) => color === activeButton?.color)
-                            ? "border-brand"
-                            : "",
-                    ]}
-                >
-                    <input
-                        id="{uid}-color"
-                        {...editButton.fields.color.as("color")}
-                        class="absolute inset-0 size-full cursor-pointer opacity-0"
-                        title="Custom"
-                        value={activeButton.color ?? "#000000"}
-                        oninput={(event) => {
-                            activeButton.color = event.currentTarget.value;
-                        }}
-                    />
-                </div>
-
-                {#each colors as [color, name], i (i)}
-                    {#if color}
-                        <button
-                            type="button"
-                            title={name}
-                            class={[
-                                "m-0.5 size-6 cursor-pointer rounded border-2",
-                                activeButton.color === color ? "border-brand" : "",
-                            ]}
-                            style:background-color={color}
-                            onclick={() => {
-                                activeButton.color = color;
-                            }}
-                        >
-                        </button>
-                    {:else}
-                        <div class="w-full shrink"></div>
-                    {/if}
-                {/each}
-            </div>
+            <ColorSelector
+                id="{uid}-color"
+                {...editButton.fields.color.as("color")}
+                bind:color={
+                    () => activeButton.color,
+                    (value) => {
+                        activeButton.color = value;
+                    }
+                }
+            />
         </div>
 
         <!-- Script field -->
