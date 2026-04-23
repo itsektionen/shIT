@@ -1,14 +1,3 @@
-<script lang="ts" module>
-    import * as vb from "valibot";
-    export const buttonEditSchema = vb.object({
-        id: vb.string(),
-        script: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
-        label: vb.pipe(vb.string(), vb.trim(), vb.minLength(1)),
-        color: vb.optional(vb.string()),
-        iconId: vb.optional(vb.string()),
-    });
-</script>
-
 <script lang="ts">
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
     import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
@@ -18,6 +7,7 @@
     import type { buttonTable } from "$lib/server/db/schema";
     import IconSearchResults from "./IconSearchResults.svelte";
     import { deleteButton, editButton, getButtons } from "$lib/db.remote";
+    import { buttonEditSchema } from "$lib/schemas";
     import Icon from "@iconify/svelte";
     import { getScriptsContext } from "$lib/context";
     import ScriptButton from "./buttons/ScriptButton.svelte";

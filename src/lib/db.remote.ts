@@ -5,8 +5,7 @@ import { buttonTable, collectionTable } from "$lib/server/db/schema";
 import * as vb from "valibot";
 import { redirect } from "@sveltejs/kit";
 import path from "path";
-import { buttonEditSchema } from "$lib/components/ButtonEditModal.svelte";
-import { collectionEditSchema } from "./components/CollectionEditModal.svelte";
+import { buttonEditSchema, collectionEditSchema } from "$lib/schemas";
 
 export const getCollections = query(async () => {
     return await db.select().from(collectionTable);

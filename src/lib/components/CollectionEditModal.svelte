@@ -14,6 +14,7 @@
     import ColorSelector from "./ColorSelector.svelte";
     import type { collectionTable } from "$lib/server/db/schema";
     import { deleteCollection, editCollection, getCollections } from "$lib/db.remote";
+    import { collectionEditSchema } from "$lib/schemas";
     import CollectionButton from "./buttons/CollectionButton.svelte";
     import { onMount } from "svelte";
 
