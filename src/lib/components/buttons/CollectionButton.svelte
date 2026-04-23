@@ -46,7 +46,7 @@
         <div
             class={[
                 "pointer-events-none absolute top-0 right-0 flex h-6 min-w-6 items-center",
-                "not-pointer-coarse:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
+                "not-pointer-coarse:opacity-0 group-hover:opacity-100",
             ]}
         >
             <EditIcon class="size-6" />
