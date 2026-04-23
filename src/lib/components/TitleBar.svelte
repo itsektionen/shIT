@@ -16,15 +16,6 @@
 </script>
 
 <span class="grid max-w-full shrink grow grid-cols-[1fr_auto_1fr]">
-    <div></div>
-    <span class="flex flex-row items-center justify-center gap-2 overflow-hidden">
-        <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
-        <h1>shIT</h1>
-        <img src={logo} alt="SMN Logo" class="size-8" />
-        <span class="truncate text-2xl text-nowrap not-lg:hidden">
-            {acronym}
-        </span>
-    </span>
     <button
         type="button"
         role="switch"
@@ -33,7 +24,7 @@
         onclick={() => {
             editMode.isEditing = !editMode.isEditing;
         }}
-        class="ml-2 flex flex-row items-center justify-end"
+        class="mr-2 flex flex-row items-center justify-start"
     >
         {#if editMode.isEditing}
             <span title="Editing"><EditIcon class="size-7"></EditIcon></span>
@@ -41,4 +32,12 @@
             <span title="Viewing"><ReadIcon class="size-7"></ReadIcon></span>
         {/if}
     </button>
+    <span class="flex flex-row items-center justify-center gap-2 overflow-hidden">
+        <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
+        <h1>shIT</h1>
+        <img src={logo} alt="SMN Logo" class="size-8" />
+        <span class="truncate text-2xl text-nowrap not-lg:hidden">
+            {acronym}
+        </span>
+    </span>
 </span>
