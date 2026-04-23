@@ -53,7 +53,12 @@
 </svelte:head>
 
 {#if editingButton}
-    <ButtonEditModal button={editingButton} onclose={() => { editingButton = undefined; }} />
+    <ButtonEditModal
+        button={editingButton}
+        onclose={() => {
+            editingButton = undefined;
+        }}
+    />
 {/if}
 
 <main

@@ -65,7 +65,12 @@
 </script>
 
 {#if editingCollection}
-    <CollectionEditModal collection={editingCollection} onclose={() => { editingCollection = undefined; }} />
+    <CollectionEditModal
+        collection={editingCollection}
+        onclose={() => {
+            editingCollection = undefined;
+        }}
+    />
 {/if}
 
 <div class="flex h-full flex-row justify-center">

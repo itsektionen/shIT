@@ -74,7 +74,7 @@
     </header>
 
     <div class="relative w-full grow">
-        <div class="sidebar-contents size-full flex flex-col p-2 overflow-y-auto">
+        <div class="sidebar-contents flex size-full flex-col overflow-y-auto p-2">
             {@render children()}
         </div>
     </div>

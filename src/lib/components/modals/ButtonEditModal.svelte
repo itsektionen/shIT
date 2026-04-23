@@ -169,7 +169,7 @@
 
         <!-- Color field -->
         <div class="flex flex-col gap-1">
-        <!-- FIXME: Clicking on the label does not focus the arbitrary color input -->
+            <!-- FIXME: Clicking on the label does not focus the arbitrary color input -->
             <label class="flex items-center gap-1 font-semibold">
                 <ColorIcon class="size-[1lh]" />
                 <span class="grow">Color</span>
