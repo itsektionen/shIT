@@ -33,23 +33,23 @@
     <a
         class="flex size-full shrink cursor-pointer items-center truncate overflow-hidden px-2 text-xl font-semibold"
         href={resolve(isCurrent ? "/" : `/col/${col.id}`)}
-        onclick={(event) => {
-            if (editMode.isEditing) {
-                event.preventDefault();
-                onEdit?.(col);
-            }
-        }}
     >
         <span>{col.label}</span>
     </a>
     {#if onEdit && editMode.isEditing}
-        <div
+        <button
             class={[
-                "pointer-events-none absolute top-0 right-0 flex h-6 min-w-6 items-center",
-                "not-pointer-coarse:opacity-0 group-hover:opacity-100",
+                "h-10 w-10 shrink-0 pointer-coarse:w-15",
+                "flex flex-row items-center justify-end pr-2",
+                "hover:bg-background/50 hover:text-brand",
             ]}
+            onclick={() => {
+                if (editMode.isEditing) {
+                    onEdit?.(col);
+                }
+            }}
         >
             <EditIcon class="size-6" />
-        </div>
+        </button>
     {/if}
 </div>
