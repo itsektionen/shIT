@@ -1,19 +1,14 @@
 <script lang="ts">
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
-    import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
-    import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
 
     import type { collectionTable } from "$lib/server/db/schema";
-    import IconSearchResults from "../IconSearchResults.svelte";
     import {
         deleteCollection,
         editCollection as editCollectionForm,
         getCollections,
     } from "$lib/db.remote";
     import { collectionFormSchema } from "$lib/schemas";
-    import Icon from "@iconify/svelte";
-    import { getScriptsContext } from "$lib/context";
     import { onMount } from "svelte";
     import ColorSelector from "../ColorSelector.svelte";
     import CollectionButton from "../buttons/CollectionButton.svelte";
