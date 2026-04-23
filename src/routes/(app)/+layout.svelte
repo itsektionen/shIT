@@ -6,7 +6,7 @@
     import Sidebar from "$lib/components/Sidebar.svelte";
     import SidebarToggleButton from "$lib/components/SidebarToggleButton.svelte";
     import ScriptTree from "$lib/components/ScriptTree.svelte";
-    import EditModeButton from "$lib/components/EditModeButton.svelte";
+    import EditModeButton from "$lib/components/buttons/EditModeButton.svelte";
     import CollectionButton from "$lib/components/buttons/CollectionButton.svelte";
     import CollectionEditModal from "$lib/components/CollectionEditModal.svelte";
 
