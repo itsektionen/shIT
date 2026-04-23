@@ -29,8 +29,9 @@
         "bg-secondary hover:opacity-80 **:focus-visible:opacity-80 has-[>:first-child:active]:scale-95",
         btn.color && "text-contrast",
     ]}
-    style:--bg={btn.color}
-    style:background={btn.color}
+    style:--bg={btn.color || undefined}
+    style:background={btn.color || undefined}
+    title={`Script: "${btn.script}"${isInvalidScript ? " (not found)" : ""}`}
 >
     <button
         class="size-full cursor-pointer truncate overflow-hidden px-4 text-xl font-semibold"
@@ -49,22 +50,19 @@
         {/if}
         <span>{btn.label}</span>
     </button>
-    {#if onEdit || isInvalidScript}
-        <button
+    {#if (onEdit && editMode.isEditing) || isInvalidScript}
+        <div
             class={[
-                "absolute top-0 right-0 flex h-6 min-w-6 cursor-pointer items-center",
-                isInvalidScript
-                    ? ""
-                    : "not-pointer-coarse:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 pointer-coarse:hidden",
+                "pointer-events-none absolute top-0 right-0 flex h-6 min-w-6 items-center",
+                !isInvalidScript &&
+                    "not-pointer-coarse:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
             ]}
-            title={isInvalidScript ? "Script not found" : "Edit button"}
-            onclick={() => onEdit?.(btn)}
         >
             {#if isInvalidScript}
                 <WarnIcon class="size-6" />
             {:else}
                 <EditIcon class="size-6" />
             {/if}
-        </button>
+        </div>
     {/if}
 </div>

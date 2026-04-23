@@ -1,27 +1,39 @@
 <script lang="ts">
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
+    import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
+    import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
 
-    import ColorSelector from "../ColorSelector.svelte";
     import type { collectionTable } from "$lib/server/db/schema";
-    import { deleteCollection, editCollection, getCollections } from "$lib/db.remote";
-    import { collectionEditSchema } from "$lib/schemas";
-    import CollectionButton from "../buttons/CollectionButton.svelte";
+    import IconSearchResults from "../IconSearchResults.svelte";
+    import {
+        deleteCollection,
+        editCollection as editCollectionForm,
+        getCollections,
+    } from "$lib/db.remote";
+    import { collectionFormSchema } from "$lib/schemas";
+    import Icon from "@iconify/svelte";
+    import { getScriptsContext } from "$lib/context";
     import { onMount } from "svelte";
+    import ColorSelector from "../ColorSelector.svelte";
+    import CollectionButton from "../buttons/CollectionButton.svelte";
 
     type Collection = typeof collectionTable.$inferSelect;
     const uid = $props.id();
 
-    let { collection: passedCollection, onclose } = $props<{ collection: Collection; onclose: () => void }>();
-
-    // svelte-ignore state_referenced_locally
-    let activeCollection = $state($state.snapshot(passedCollection));
+    let {
+        collection: passedCollection,
+        onclose,
+    }: {
+        collection: Collection;
+        onclose: () => void;
+    } = $props();
 
     onMount(() => {
-        editCollection.fields.set({
-            id: activeCollection.id,
-            label: activeCollection.label,
-            color: activeCollection.color ?? undefined,
+        editCollectionForm.fields.set({
+            id: passedCollection.id,
+            label: passedCollection.label,
+            color: passedCollection.color ?? "",
         });
     });
 </script>
@@ -42,29 +54,31 @@
     ]}
 >
     <div class="pointer-events-none flex w-full justify-center" inert>
-        <div class="border-2 min-w-[16rem] border-b-0 bg-background p-4 shadow-xl">
-            <CollectionButton col={activeCollection} onEdit={undefined} />
+        <div class="min-w-[16rem] border-2 border-b-0 bg-background p-4 shadow-xl">
+            <CollectionButton
+                col={{
+                    ...passedCollection,
+                    ...editCollectionForm.fields.value(),
+                }}
+                onEdit={undefined}
+            />
         </div>
     </div>
 
     <form
-        {...editCollection
-            .preflight(collectionEditSchema)
-            .enhance(async ({ form, data, submit }) => {
-                const active = $state.snapshot(activeCollection);
-                form.reset();
-                onclose();
-                await submit().updates(
-                    getCollections().withOverride((cols) =>
-                        cols.map((col) => (col.id === active.id ? { ...col, ...data } : col)),
-                    ),
-                );
-            })}
+        {...editCollectionForm.preflight(collectionFormSchema).enhance(async ({ data, submit }) => {
+            await submit().updates(
+                getCollections().withOverride((cols) =>
+                    cols.map((col) => (col.id === passedCollection.id ? { ...col, ...data } : col)),
+                ),
+            );
+            onclose();
+        })}
         class={["border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}
     >
         <h2 class="text-xl font-semibold">Edit Collection</h2>
 
-        <input {...editCollection.fields.id.as("hidden", "text")} value={activeCollection.id} />
+        <input {...editCollectionForm.fields.id.as("hidden", passedCollection.id)} />
 
         <!-- Label field -->
         <div class="flex flex-col gap-1">
@@ -73,18 +87,12 @@
                 <span>Label</span>
                 <span class="text-red-400">*</span>
             </label>
-            {#each editCollection.fields.label.issues() as issue, i (i)}
+            {#each editCollectionForm.fields.label.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
             <input
-                {...editCollection.fields.label.as("text")}
+                {...editCollectionForm.fields.label.as("text")}
                 id="{uid}-label"
-                bind:value={
-                    () => activeCollection.label,
-                    (value) => {
-                        activeCollection.label = value;
-                    }
-                }
                 class="w-full"
                 autocomplete="off"
                 minlength="1"
@@ -95,23 +103,15 @@
 
         <!-- Color field -->
         <div class="flex flex-col gap-1">
-            <label for="{uid}-color" class="flex items-center gap-1 font-semibold">
+            <!-- FIXME: Clicking on the label does not focus the arbitrary color input -->
+            <label class="flex items-center gap-1 font-semibold">
                 <ColorIcon class="size-[1lh]" />
                 <span class="grow">Color</span>
             </label>
-            {#each editCollection.fields.color.issues() as issue, i (i)}
+            {#each editCollectionForm.fields.color.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
-            <ColorSelector
-                id="{uid}-color"
-                {...editCollection.fields.color.as("color")}
-                bind:color={
-                    () => activeCollection.color,
-                    (value) => {
-                        activeCollection.color = value;
-                    }
-                }
-            />
+            <ColorSelector field={editCollectionForm.fields.color} />
         </div>
 
         <!-- Action buttons -->
@@ -120,7 +120,7 @@
                 type="button"
                 class="bg-red-400 px-2 py-1 text-black"
                 onclick={() => {
-                    deleteCollection(activeCollection.id).updates(getCollections());
+                    deleteCollection(passedCollection.id).updates(getCollections());
                     onclose();
                 }}
             >

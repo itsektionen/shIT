@@ -6,8 +6,8 @@
 
     import type { buttonTable } from "$lib/server/db/schema";
     import IconSearchResults from "../IconSearchResults.svelte";
-    import { deleteButton, editButton, getButtons } from "$lib/db.remote";
-    import { buttonEditSchema } from "$lib/schemas";
+    import { deleteButton, editButton as editButtonForm, getButtons } from "$lib/db.remote";
+    import { buttonFormSchema } from "$lib/schemas";
     import Icon from "@iconify/svelte";
     import { getScriptsContext } from "$lib/context";
     import ScriptButton from "../buttons/ScriptButton.svelte";
@@ -17,19 +17,21 @@
     type Button = typeof buttonTable.$inferSelect;
     const uid = $props.id();
 
-    let { button: passedButton, onclose } = $props<{ button: Button; onclose: () => void }>();
-
-    // svelte-ignore state_referenced_locally
-    let activeButton = $state($state.snapshot(passedButton));
+    let {
+        button: passedButton,
+        onclose,
+    }: {
+        button: Button;
+        onclose: () => void;
+    } = $props();
 
     onMount(() => {
-        // Initialize form fields once when component mounts
-        editButton.fields.set({
-            id: activeButton.id,
-            script: activeButton.script,
-            label: activeButton.label,
-            color: activeButton.color ?? undefined,
-            iconId: activeButton.iconId ?? undefined,
+        editButtonForm.fields.set({
+            id: passedButton.id,
+            script: passedButton.script,
+            label: passedButton.label,
+            color: passedButton.color ?? "",
+            iconId: passedButton.iconId ?? "",
         });
     });
 
@@ -61,26 +63,30 @@
 >
     <div class="pointer-events-none flex w-full justify-center" inert>
         <div class="border-2 border-b-0 bg-background p-4 shadow-xl">
-            <ScriptButton btn={activeButton} onEdit={undefined} />
+            <ScriptButton
+                btn={{
+                    ...passedButton,
+                    ...editButtonForm.fields.value(),
+                }}
+                onEdit={undefined}
+            />
         </div>
     </div>
 
     <form
-        {...editButton.preflight(buttonEditSchema).enhance(async ({ form, data, submit }) => {
-            const active = $state.snapshot(activeButton);
-            form.reset();
-            onclose();
+        {...editButtonForm.preflight(buttonFormSchema).enhance(async ({ data, submit }) => {
             await submit().updates(
-                getButtons(active.collectionId).withOverride((btns) =>
-                    btns.map((btn) => (btn.id === active.id ? { ...btn, ...data } : btn)),
+                getButtons(passedButton.collectionId).withOverride((btns) =>
+                    btns.map((btn) => (btn.id === passedButton.id ? { ...btn, ...data } : btn)),
                 ),
             );
+            onclose();
         })}
         class={["border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}
     >
         <h2 class="text-xl font-semibold">Edit Button</h2>
 
-        <input {...editButton.fields.id.as("hidden", "text")} value={activeButton.id} />
+        <input {...editButtonForm.fields.id.as("hidden", passedButton.id)} />
 
         <!-- Label field -->
         <div class="flex flex-col gap-1">
@@ -89,18 +95,12 @@
                 <span>Label</span>
                 <span class="text-red-400">*</span>
             </label>
-            {#each editButton.fields.label.issues() as issue, i (i)}
+            {#each editButtonForm.fields.label.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
             <input
-                {...editButton.fields.label.as("text")}
+                {...editButtonForm.fields.label.as("text")}
                 id="{uid}-label"
-                bind:value={
-                    () => activeButton.label,
-                    (value) => {
-                        activeButton.label = value;
-                    }
-                }
                 class="w-full"
                 autocomplete="off"
                 minlength="1"
@@ -115,23 +115,20 @@
                 <IconIcon class="size-[1lh]" />
                 <span>Icon</span>
             </label>
-            {#each editButton.fields.iconId.issues() as issue, i (i)}
+            {#each editButtonForm.fields.iconId.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
             <div class="group relative">
                 <!-- a hidden input to pass the value to the form. prevents having to expose the prefix to the user -->
-                <input
-                    {...editButton.fields.iconId.as("hidden", "text")}
-                    value={activeButton.iconId?.trim() || ""}
-                />
+                <input {...editButtonForm.fields.iconId.as("text")} class="hidden" />
                 <div class="group relative" style:--size="calc(var(--spacing) * 2 + 1lh)">
                     <!-- Real input the user will use -->
                     <input
                         type="text"
                         bind:value={
-                            () => iconNameFromId(activeButton.iconId ?? ""),
+                            () => iconNameFromId(editButtonForm.fields.iconId.value() ?? ""),
                             (value) => {
-                                activeButton.iconId = iconIdFromName(value);
+                                editButtonForm.fields.iconId.set(iconIdFromName(value));
                             }
                         }
                         id="{uid}-icon"
@@ -144,7 +141,10 @@
                             "absolute top-1/2 right-0 -translate-y-1/2 text-border",
                         ]}
                     >
-                        <Icon icon={activeButton.iconId ?? ""} class="size-(--size)" />
+                        <Icon
+                            icon={editButtonForm.fields.iconId.value() ?? ""}
+                            class="size-(--size)"
+                        />
                     </div>
                 </div>
                 <!-- a datalist doesn't cut it here so we roll our own :/ -->
@@ -156,9 +156,9 @@
                 >
                     <IconSearchResults
                         bind:icon={
-                            () => activeButton.iconId ?? "",
+                            () => editButtonForm.fields.iconId.value() ?? "",
                             (value) => {
-                                activeButton.iconId = value;
+                                editButtonForm.fields.iconId.set(value);
                             }
                         }
                         iconPrefix={ICON_PREFIX}
@@ -169,23 +169,15 @@
 
         <!-- Color field -->
         <div class="flex flex-col gap-1">
-            <label for="{uid}-color" class="flex items-center gap-1 font-semibold">
+        <!-- FIXME: Clicking on the label does not focus the arbitrary color input -->
+            <label class="flex items-center gap-1 font-semibold">
                 <ColorIcon class="size-[1lh]" />
                 <span class="grow">Color</span>
             </label>
-            {#each editButton.fields.color.issues() as issue, i (i)}
+            {#each editButtonForm.fields.color.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
-            <ColorSelector
-                id="{uid}-color"
-                {...editButton.fields.color.as("color")}
-                bind:color={
-                    () => activeButton.color,
-                    (value) => {
-                        activeButton.color = value;
-                    }
-                }
-            />
+            <ColorSelector field={editButtonForm.fields.color} />
         </div>
 
         <!-- Script field -->
@@ -195,11 +187,11 @@
                 <span>Script path</span>
                 <span class="text-red-400">*</span>
             </label>
-            {#each editButton.fields.script.issues() as issue, i (i)}
+            {#each editButtonForm.fields.script.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
             <input
-                {...editButton.fields.script.as("text")}
+                {...editButtonForm.fields.script.as("text")}
                 id="{uid}-script"
                 class="w-full invalid:text-red-400"
                 autocomplete="off"
@@ -227,7 +219,7 @@
                 type="button"
                 class="bg-red-400 px-2 py-1 text-black"
                 onclick={() => {
-                    deleteButton(activeButton.id).updates(getButtons(activeButton.collectionId));
+                    deleteButton(passedButton.id).updates(getButtons(passedButton.collectionId));
                     onclose();
                 }}
             >
@@ -246,9 +238,3 @@
         </div>
     </form>
 </dialog>
-
-<style>
-    .rainbow-gradient {
-        background: conic-gradient(in oklch longer hue, oklch(0.75 0.12 0), oklch(0.75 0.12 0));
-    }
-</style>
