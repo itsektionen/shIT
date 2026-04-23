@@ -69,7 +69,7 @@
     <ul
         class={[
             "grid grid-cols-[repeat(auto-fit,--spacing(64))]",
-            "grow items-center justify-center gap-2 p-4",
+            "grow items-center justify-center gap-2 px-4 py-8",
         ]}
         {@attach editMode.isEditing ? sortable : undefined}
     >
