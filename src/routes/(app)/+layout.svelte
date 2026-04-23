@@ -20,6 +20,10 @@
     } from "$lib/context";
     import TitleBar from "$lib/components/TitleBar.svelte";
 
+    import type { collectionTable } from "$lib/server/db/schema";
+
+    type Collection = typeof collectionTable.$inferSelect;
+
     let editMode = $state({
         isEditing: false,
     });
@@ -57,10 +61,12 @@
 
     let leftSidebar: Sidebar;
     let rightSidebar: Sidebar;
-    let editingModal: CollectionEditModal;
+    let editingCollection = $state<Collection | undefined>(undefined);
 </script>
 
-<CollectionEditModal bind:this={editingModal} />
+{#if editingCollection}
+    <CollectionEditModal collection={editingCollection} onclose={() => { editingCollection = undefined; }} />
+{/if}
 
 <div class="flex h-full flex-row justify-center">
     <Sidebar side="left" bind:this={leftSidebar}>
@@ -84,7 +90,7 @@
                         col={collection}
                         {isCurrent}
                         onEdit={() => {
-                            editingModal.edit(collection);
+                            editingCollection = collection;
                         }}
                     />
                 </li>

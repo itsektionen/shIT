@@ -84,14 +84,6 @@
         return () => element.close();
     }}
     closedby="any"
-    oncancel={(event) => {
-        // Hack to prevent instant closing from clicking the backdrop after being just opened
-        // Has issues with mobile long press opening otherwise
-        const timeSinceOpen = Date.now() - openedAt;
-        if (timeSinceOpen < 300) {
-            event.preventDefault();
-        }
-    }}
     onclose={() => onclose()}
     style:width="min(calc(var(--spacing) * 90), 100%)"
     class={[
