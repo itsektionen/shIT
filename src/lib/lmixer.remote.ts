@@ -11,6 +11,6 @@ export const runScript = command(vb.string(), async (scriptPath) => {
     if (import.meta.env.DEV) {
         console.warn("Running in development mode. Will not execute script.");
     } else {
-        // mqttClient.publish("light_mixer/code/startScript", scriptPath);
+        mqttClient.publish("light_mixer/code/startScript", scriptPath);
     }
 });

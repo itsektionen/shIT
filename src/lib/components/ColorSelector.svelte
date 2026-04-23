@@ -1,11 +1,11 @@
 <script lang="ts">
-    let {
-        color = $bindable(),
-        ...inputProps
-    }: {
-        color: string | null;
-        [key: string]: unknown;
-    } = $props();
+    import type { RemoteFormField } from "@sveltejs/kit";
+    import EraserIcon from "@iconify-svelte/material-symbols/ink-eraser-rounded";
+
+    let { field }: { field: RemoteFormField<string> } = $props();
+
+    const NULL_COLOR = "";
+    const DEFAULT_COLOR = "#000000";
 
     const colors = [
         ["#000000", "Black"],
@@ -33,32 +33,35 @@
 </script>
 
 <div class="flex flex-wrap">
+    <input {...field.as("text")} class="hidden" />
+
     <button
         type="button"
         title="Default"
         class={[
             "m-0.5 size-6 cursor-pointer rounded border-2 bg-secondary",
-            color === null ? "border-brand" : "",
+            field.value() === NULL_COLOR ? "border-brand" : "",
         ]}
         onclick={() => {
-            color = null;
+            field.set(NULL_COLOR);
         }}
     >
+        <EraserIcon class="size-full text-foreground/25" />
     </button>
 
     <div
         class={[
             "rainbow-gradient relative m-0.5 size-6 rounded border-2",
-            color && !colors.some(([c]) => c === color) ? "border-brand" : "",
+            field.value() && !colors.some(([c]) => c === field.value()) ? "border-brand" : "",
         ]}
     >
         <input
-            {...inputProps}
+            type="color"
             class="absolute inset-0 size-full cursor-pointer opacity-0"
             title="Custom"
-            value={color ?? "#000000"}
+            value={field.value() === NULL_COLOR ? DEFAULT_COLOR : field.value()}
             oninput={(event) => {
-                color = event.currentTarget.value;
+                field.set(event.currentTarget.value);
             }}
         />
     </div>
@@ -70,11 +73,11 @@
                 title={name}
                 class={[
                     "m-0.5 size-6 cursor-pointer rounded border-2",
-                    color === col ? "border-brand" : "",
+                    field.value() === col ? "border-brand" : "",
                 ]}
                 style:background-color={col}
                 onclick={() => {
-                    color = col;
+                    field.set(col);
                 }}
             >
             </button>

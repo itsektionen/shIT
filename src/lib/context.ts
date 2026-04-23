@@ -10,9 +10,8 @@ export const [getScriptsContext, setScriptsContext] = createContext<{
 }>();
 
 export const [getEditModeContext, setEditModeContext] = createContext<{
-    isEditing: boolean
+    isEditing: boolean;
 }>();
-
 
 export const confirmScriptExecution = (scriptName: string) => {
     const key = "confirmScriptExecution";
