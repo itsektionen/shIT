@@ -2,7 +2,7 @@
     import Sortable from "sortablejs";
     import type { Attachment } from "svelte/attachments";
 
-    import ButtonEditModal from "$lib/components/ButtonEditModal.svelte";
+    import ButtonEditModal from "$lib/components/modals/ButtonEditModal.svelte";
 
     import type { PageProps } from "./$types";
     import { createButton, getButtons, reorderButtons } from "$lib/db.remote";

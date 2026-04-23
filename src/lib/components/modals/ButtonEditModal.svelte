@@ -5,12 +5,12 @@
     import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
 
     import type { buttonTable } from "$lib/server/db/schema";
-    import IconSearchResults from "./IconSearchResults.svelte";
+    import IconSearchResults from "../IconSearchResults.svelte";
     import { deleteButton, editButton, getButtons } from "$lib/db.remote";
     import { buttonEditSchema } from "$lib/schemas";
     import Icon from "@iconify/svelte";
     import { getScriptsContext } from "$lib/context";
-    import ScriptButton from "./buttons/ScriptButton.svelte";
+    import ScriptButton from "../buttons/ScriptButton.svelte";
     import { onMount } from "svelte";
 
     type Button = typeof buttonTable.$inferSelect;

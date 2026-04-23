@@ -11,11 +11,11 @@
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
 
-    import ColorSelector from "./ColorSelector.svelte";
+    import ColorSelector from "../ColorSelector.svelte";
     import type { collectionTable } from "$lib/server/db/schema";
     import { deleteCollection, editCollection, getCollections } from "$lib/db.remote";
     import { collectionEditSchema } from "$lib/schemas";
-    import CollectionButton from "./buttons/CollectionButton.svelte";
+    import CollectionButton from "../buttons/CollectionButton.svelte";
     import { onMount } from "svelte";
 
     type Collection = typeof collectionTable.$inferSelect;
