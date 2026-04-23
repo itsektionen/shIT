@@ -21,8 +21,8 @@
         "group relative h-10 w-full text-wrap select-none hover:opacity-80",
         "flex flex-row items-center justify-center",
         "hover:opacity-80 **:focus-visible:opacity-80 has-[>:first-child:active]:scale-95",
-        isCurrent ? "bg-brand/20" : "bg-secondary",
-        col.color && "text-contrast",
+        col.color ? "text-contrast" : "bg-secondary",
+        isCurrent && "outline-2 outline-offset-2 outline-brand",
     ]}
     style:--bg={col.color}
     style:background={col.color}
