@@ -8,6 +8,9 @@
     import { createButton, getButtons, reorderButtons } from "$lib/db.remote";
     import { getEditModeContext } from "$lib/context";
     import ScriptButton from "$lib/components/buttons/ScriptButton.svelte";
+    import type { buttonTable } from "$lib/server/db/schema";
+
+    type Button = typeof buttonTable.$inferSelect;
 
     let { data }: PageProps = $props();
 
@@ -41,7 +44,7 @@
         return () => sortable.destroy();
     };
 
-    let editingModal: ButtonEditModal;
+    let editingButton = $state<Button | undefined>(undefined);
     let editMode = getEditModeContext();
 </script>
 
@@ -49,7 +52,9 @@
     <title>shIT {data.currentCollection && `- ${data.currentCollection.label}`}</title>
 </svelte:head>
 
-<ButtonEditModal bind:this={editingModal} />
+{#if editingButton}
+    <ButtonEditModal button={editingButton} onclose={() => { editingButton = undefined; }} />
+{/if}
 
 <main
     class="grow"
@@ -78,7 +83,7 @@
                 <ScriptButton
                     {btn}
                     onEdit={(btn) => {
-                        editingModal.edit(btn);
+                        editingButton = btn;
                     }}
                 />
             </li>
