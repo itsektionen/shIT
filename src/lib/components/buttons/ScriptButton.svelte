@@ -1,4 +1,5 @@
 <script lang="ts">
+    import PlayIcon from "@iconify-svelte/material-symbols/play-arrow-rounded";
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
     import WarnIcon from "@iconify-svelte/material-symbols/warning-rounded";
 
@@ -50,18 +51,19 @@
         {/if}
         <span>{btn.label}</span>
     </button>
-    {#if (onEdit && editMode.isEditing) || isInvalidScript}
         <div
             class={[
                 "pointer-events-none absolute top-0 right-0 flex h-6 min-w-6 items-center",
-                !isInvalidScript && "not-pointer-coarse:opacity-0 group-hover:opacity-100",
+            !isInvalidScript &&
+                "not-pointer-coarse:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
             ]}
         >
             {#if isInvalidScript}
                 <WarnIcon class="size-6" />
+        {:else if editMode.isEditing}
+            <EditIcon class="size-6" />
             {:else}
-                <EditIcon class="size-6" />
+            <PlayIcon class="size-6" />
             {/if}
         </div>
-    {/if}
 </div>
