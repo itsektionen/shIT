@@ -1,14 +1,14 @@
 services:
-    shit:
-        build: .
-        restart: unless-stopped
-        environment:
-            DATABASE_URL: file:/var/lib/shIT/data/shIT.db
-            MQTT_URL: ${MQTT_URL}
-            ORIGIN: ${ORIGIN}
-            PROTOCOL_HEADER: ${PROTOCOL_HEADER}
-            HOST_HEADER: ${HOST_HEADER}
-        ports:
-            - "3000:3000"
-        volumes:
-            - $PWD/data:/var/lib/shIT/data:rw
+  shit:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: file:/var/lib/shIT/data/shIT.db
+      MQTT_URL: ${MQTT_URL}
+      ORIGIN: ${ORIGIN}
+      PROTOCOL_HEADER: ${PROTOCOL_HEADER}
+      HOST_HEADER: ${HOST_HEADER}
+    ports:
+      - "3000:3000"
+    volumes:
+      - $PWD/data:/var/lib/shIT/data:rw
