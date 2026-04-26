@@ -1,12 +1,13 @@
 <script lang="ts" module>
     interface TreeFile {
+        type: "file";
         name: string;
         path: string;
-        type: "file";
     }
     interface TreeDirectory {
-        name: string;
         type: "directory";
+        name: string;
+        path: string;
         children: (TreeFile | TreeDirectory)[];
     }
     type TreeNode = TreeFile | TreeDirectory;
@@ -16,9 +17,11 @@
     import FileIcon from "@iconify-svelte/material-symbols/description-rounded";
     import FolderClosedIcon from "@iconify-svelte/material-symbols/folder-rounded";
     import FolderOpenIcon from "@iconify-svelte/material-symbols/folder-open-rounded";
+    import PlayIcon from "@iconify-svelte/material-symbols/play-arrow-rounded";
+    import DragIcon from "@iconify-svelte/material-symbols/drag-click-rounded";
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
 
-    import { SvelteMap } from "svelte/reactivity";
+    import { MediaQuery, SvelteMap } from "svelte/reactivity";
     import ScriptTree from "./ScriptTree.svelte";
     import { runScript } from "$lib/lmixer.remote";
     import { createButton } from "$lib/db.remote";
@@ -30,12 +33,17 @@
         for (const filePath of paths) {
             const parts = filePath.split("/");
             let parentChildren: TreeNode[] = tree;
+            let parentPath = "";
             for (const segment of parts.slice(0, -1)) {
-                let node: TreeNode | undefined = parentChildren.find((c) => c.name === segment);
+                const segmentPath = parentPath ? `${parentPath}/${segment}` : segment;
+                let node: TreeNode | undefined = parentChildren.find(
+                    (c) => c.type === "directory" && c.path === segmentPath,
+                );
                 if (!node) {
                     node = {
-                        name: segment,
                         type: "directory",
+                        name: segment,
+                        path: segmentPath,
                         children: [],
                     } satisfies TreeDirectory;
                     parentChildren.push(node);
@@ -43,14 +51,15 @@
                 if (node.type !== "directory")
                     throw new Error(`Expected ${node.name} to be a directory`);
                 parentChildren = node.children;
+                parentPath = segmentPath;
             }
             const fileName = parts[parts.length - 1];
             if (parentChildren.some((c) => c.name === fileName))
                 throw new Error(`Duplicate file name: ${filePath}`);
             parentChildren.push({
+                type: "file",
                 name: fileName,
                 path: filePath,
-                type: "file",
             });
         }
         // Recursive sort to make directories come before files, then sort alphabetically
@@ -92,15 +101,17 @@
                   }),
               ),
     );
+
     let nodeExpansions = new SvelteMap<string, boolean>();
     let collection = getCollectionContext();
     let editMode = getEditModeContext();
+    let touchQuery = new MediaQuery("(pointer: coarse)");
 </script>
 
 <!-- TODO: Turn into an accessible tree view. Requires some effort for to-spec keyboard navigation though -->
 <ul class="flex flex-col" role={isRoot ? "tree" : "group"}>
-    {#each processedTree as node (node.name)}
-        {@const shouldExpand = nodeExpansions.get(node.name) ?? expandAll}
+    {#each processedTree as node (node.path)}
+        {@const shouldExpand = nodeExpansions.get(node.path) ?? expandAll}
         {#if node.type === "directory"}
             <li class="flex flex-col" data-expanded={shouldExpand}>
                 <button
@@ -111,7 +122,7 @@
                         !expandAll && "cursor-pointer",
                     ]}
                     onclick={() => {
-                        nodeExpansions.set(node.name, !shouldExpand);
+                        nodeExpansions.set(node.path, !shouldExpand);
                     }}
                 >
                     {#if shouldExpand}
@@ -137,12 +148,20 @@
                         "pointer-coarse:py-2",
                     ]}
                     onclick={() => {
-                        if (editMode.isEditing) return;
-                        if (confirmScriptExecution(node.name)) {
-                            runScript(node.path);
+                        if (editMode.isEditing) {
+                            if (!touchQuery.current) return; // Only touch needs a button
+                            if (!collection.current) return;
+                            createButton({
+                                collectionId: collection.current.id,
+                                scriptPath: node.path,
+                            });
+                        } else {
+                            if (confirmScriptExecution(node.name)) {
+                                runScript(node.path);
+                            }
                         }
                     }}
-                    draggable="true"
+                    draggable={editMode.isEditing && !touchQuery.current}
                     ondragstart={(event) => {
                         if (!event.dataTransfer) return;
                         if (!editMode.isEditing) {
@@ -155,29 +174,23 @@
                     }}
                 >
                     <FileIcon class="size-[1lh] opacity-50" />
-                    <span class="truncate">{node.name}</span>
-                </button>
-                <!-- Touch-friendly add button -->
-                {#if collection.current}
-                    <button
+                    <span class="grow truncate text-start">{node.name}</span>
+                    <div
                         class={[
-                            "size-8 p-0.5 not-pointer-coarse:hidden",
-                            "bg-secondary hover:bg-secondary/60 focus:bg-secondary/60",
+                            "size-[1lh] p-0.5 pointer-coarse:size-[calc(1lh+var(--spacing)*2)]",
                         ]}
-                        onclick={() => {
-                            if (!collection.current) {
-                                console.error("Tried adding script to null collection");
-                                return;
-                            }
-                            createButton({
-                                collectionId: collection.current.id,
-                                scriptPath: node.path,
-                            });
-                        }}
                     >
-                        <AddIcon class="size-full" />
-                    </button>
-                {/if}
+                        {#if editMode.isEditing}
+                            {#if touchQuery.current}
+                                <AddIcon class="size-full" />
+                            {:else}
+                                <DragIcon class="size-full" />
+                            {/if}
+                        {:else}
+                            <PlayIcon class="size-full" />
+                        {/if}
+                    </div>
+                </button>
             </li>
         {/if}
     {/each}
