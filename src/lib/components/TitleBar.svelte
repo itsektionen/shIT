@@ -29,7 +29,7 @@
         {#if editMode.isEditing}
             <span title="Editing"><EditIcon class="size-7"></EditIcon></span>
         {:else}
-            <span title="Viewing"><ReadIcon class="size-7"></ReadIcon></span>
+            <span title="Running"><ReadIcon class="size-7"></ReadIcon></span>
         {/if}
     </button>
     <span class="flex flex-row items-center justify-center gap-2 overflow-hidden">
