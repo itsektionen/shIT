@@ -2,6 +2,7 @@
     "name": "shit",
     "private": true,
     "version": "0.0.1",
+    "license": "EUPL",
     "type": "module",
     "scripts": {
         "dev": "vite dev",
