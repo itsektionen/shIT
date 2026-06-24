@@ -1,7 +1,7 @@
 # shIT | shellless Input Terminal
 
 The IT chapter's new-and-improved simple interface for interacting with the locale.
-Sucessor to [crAp](https://github.com/itsektionen/control-app).
+Successor to [crAp](https://github.com/itsektionen/control-app).
 
 ## Development
 
