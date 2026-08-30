@@ -18,13 +18,13 @@ export const buttonTable = sqliteTable(
             .notNull()
             .$defaultFn(() => crypto.randomUUID()),
         collectionId: t
-            .text()
+            .text("collection_id")
             .notNull()
             .references(() => collectionTable.id, { onDelete: "cascade" }),
         script: t.text().notNull(),
         label: t.text().notNull(),
         color: t.text(),
-        iconId: t.text(),
+        iconId: t.text("icon_id"),
         // Used to determine the order of buttons within a collection
         order: t.integer().notNull(),
     }),
