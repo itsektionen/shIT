@@ -1,11 +1,12 @@
-# shIT | shellless Input Terminal
+# shIT
 
 The IT chapter's new-and-improved simple interface for interacting with the locale.
 Successor to [crAp](https://github.com/itsektionen/control-app).
+It's an LMixer frontend meant for the average person.
 
 ## Development
 
-shIT is written using SvelteKit for the entire stack and stores data with SQLite through drizzle.
+shIT is written using SvelteKit for the entire stack and stores data with SQLite through the drizzle ORM.
 
 Start the dev server just like any other project using
 
