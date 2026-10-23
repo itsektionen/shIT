@@ -11,6 +11,7 @@
 
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
     import { createCollection, getCollections } from "$lib/db.remote";
+    import { createCollectionSchema } from "$lib/schemas";
     import { onMount } from "svelte";
     import {
         getScriptsContext,
@@ -101,10 +102,12 @@
                 </li>
             {/each}
             <li>
-                <form class="relative" {...createCollection}>
+                <form class="relative" {...createCollection.preflight(createCollectionSchema)}>
                     <input
                         {...createCollection.fields.label.as("text")}
                         placeholder="Create new collection"
+                        required
+                        pattern=".*\S.*"
                         class="peer min-h-12 w-full text-center placeholder:sr-only placeholder:opacity-0"
                         autocomplete="off"
                     />
