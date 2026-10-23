@@ -12,8 +12,10 @@
     import { getScriptsContext } from "$lib/context";
     import ScriptButton from "../buttons/ScriptButton.svelte";
     import { onMount } from "svelte";
+    import fuzzysort from "fuzzysort";
     import ColorSelector from "../ColorSelector.svelte";
     import Modal from "../Modal.svelte";
+    import SuggestionBox from "../SuggestionBox.svelte";
 
     type Button = typeof buttonTable.$inferSelect;
     const uid = $props.id();
@@ -46,21 +48,26 @@
         return name ? `${ICON_PREFIX}:${name}` : "";
     }
 
-    // Escape closes the suggestions first
-    let iconSuggestionsDismissed = $state(false);
-    function onIconKeydown(e: KeyboardEvent) {
-        if (e.key === "Escape" && !iconSuggestionsDismissed) {
-            e.preventDefault();
-            e.stopPropagation();
-            iconSuggestionsDismissed = true;
-            if (e.target instanceof HTMLElement) e.target.blur();
-        } else if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
-            // Enter shouldn't submit from here
-            e.preventDefault();
-        }
-    }
-
     let scripts = getScriptsContext();
+    let scriptInput = $state<HTMLInputElement>();
+
+    const scriptValue = $derived(editButtonForm.fields.script.value() ?? "");
+    const scriptSuggestions = $derived.by(() => {
+        const paths = scripts.paths ?? [];
+        if (paths.includes(scriptValue)) return [];
+        return scriptValue
+            ? fuzzysort.go(scriptValue, paths, { limit: 50 }).map((r) => r.target)
+            : paths.slice(0, 50);
+    });
+
+    // don't block saving unchanged scripts
+    $effect(() => {
+        const scriptUnknown =
+            scripts.paths &&
+            scriptValue !== passedButton.script &&
+            !scripts.paths.includes(scriptValue);
+        scriptInput?.setCustomValidity(scriptUnknown ? "Script not found" : "");
+    });
 </script>
 
 <Modal {onclose}>
@@ -121,7 +128,7 @@
             {#each editButtonForm.fields.iconId.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
-            <div class="group relative" onkeydown={onIconKeydown} role="presentation">
+            <SuggestionBox>
                 <!-- a hidden input to pass the value to the form. prevents having to expose the prefix to the user -->
                 <input {...editButtonForm.fields.iconId.as("text")} class="hidden" />
                 <div class="group relative" style:--size="calc(var(--spacing) * 2 + 1lh)">
@@ -137,8 +144,6 @@
                         id="{uid}-icon"
                         class="w-full pr-8 focus-visible:[&+*]:text-brand"
                         autocomplete="off"
-                        oninput={() => (iconSuggestionsDismissed = false)}
-                        onfocus={() => (iconSuggestionsDismissed = false)}
                     />
                     <div
                         class={[
@@ -152,14 +157,8 @@
                         />
                     </div>
                 </div>
-                <!-- a datalist doesn't cut it here so we roll our own :/ -->
-                <div
-                    class={[
-                        "max-h-40 w-full flex-col overflow-y-auto bg-secondary",
-                        "[scrollbar-color:var(--color-border)_transparent] [scrollbar-width:thin]",
-                        iconSuggestionsDismissed ? "hidden" : "hidden group-focus-within:flex",
-                    ]}
-                >
+                {#snippet suggestions()}
+                    <!-- a datalist doesn't cut it here so we roll our own :/ -->
                     <IconSearchResults
                         bind:icon={
                             () => editButtonForm.fields.iconId.value() ?? "",
@@ -169,8 +168,8 @@
                         }
                         iconPrefix={ICON_PREFIX}
                     />
-                </div>
-            </div>
+                {/snippet}
+            </SuggestionBox>
         </div>
 
         <!-- Color field -->
@@ -196,27 +195,29 @@
             {#each editButtonForm.fields.script.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
-            <input
-                {...editButtonForm.fields.script.as("text")}
-                id="{uid}-script"
-                class="w-full invalid:text-red-400"
-                autocomplete="off"
-                minlength="1"
-                pattern=".*\S.*"
-                required
-                oninput={(event) => {
-                    // Validate with the built-in constraints
-                    event.currentTarget.setCustomValidity("");
-                    if (!event.currentTarget.validity.valid) return;
-
-                    // Validate the script path as the user types and show errors immediately
-                    const value = event.currentTarget.value;
-                    if (!scripts.paths?.includes(value)) {
-                        event.currentTarget.setCustomValidity("Script not found");
-                    }
-                    event.currentTarget.reportValidity();
-                }}
-            />
+            <SuggestionBox show={scriptSuggestions.length > 0}>
+                <input
+                    {...editButtonForm.fields.script.as("text")}
+                    bind:this={scriptInput}
+                    id="{uid}-script"
+                    class="w-full user-invalid:text-red-400"
+                    autocomplete="off"
+                    minlength="1"
+                    pattern=".*\S.*"
+                    required
+                />
+                {#snippet suggestions()}
+                    {#each scriptSuggestions as path (path)}
+                        <button
+                            type="button"
+                            class="px-2 py-1 text-left break-all hover:bg-brand/20"
+                            onclick={() => editButtonForm.fields.script.set(path)}
+                        >
+                            {path}
+                        </button>
+                    {/each}
+                {/snippet}
+            </SuggestionBox>
         </div>
 
         <!-- Action buttons -->
