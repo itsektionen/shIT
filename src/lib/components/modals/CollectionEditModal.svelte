@@ -11,6 +11,7 @@
     import { collectionFormSchema } from "$lib/schemas";
     import { onMount } from "svelte";
     import ColorSelector from "../ColorSelector.svelte";
+    import Modal from "../Modal.svelte";
     import CollectionButton from "../buttons/CollectionButton.svelte";
 
     type Collection = typeof collectionTable.$inferSelect;
@@ -33,32 +34,16 @@
     });
 </script>
 
-<dialog
-    {@attach (element) => {
-        element.showModal();
-        return () => element.close();
-    }}
-    closedby="any"
-    onclose={() => onclose()}
-    style:width="min(calc(var(--spacing) * 90), 100%)"
-    class={[
-        "bg-transparent text-foreground select-none",
-        "flex flex-col",
-        "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible",
-        "backdrop:bg-black/40 backdrop:backdrop-blur-sm",
-    ]}
->
-    <div class="pointer-events-none flex w-full justify-center" inert>
-        <div class="min-w-[16rem] border-2 border-b-0 bg-background p-4 shadow-xl">
-            <CollectionButton
-                col={{
-                    ...passedCollection,
-                    ...editCollectionForm.fields.value(),
-                }}
-                onEdit={undefined}
-            />
-        </div>
-    </div>
+<Modal {onclose} previewClass="min-w-[16rem]">
+    {#snippet preview()}
+        <CollectionButton
+            col={{
+                ...passedCollection,
+                ...editCollectionForm.fields.value(),
+            }}
+            onEdit={undefined}
+        />
+    {/snippet}
 
     <form
         {...editCollectionForm.preflight(collectionFormSchema).enhance(async ({ data, submit }) => {
@@ -133,4 +118,4 @@
             <button type="submit" class="bg-green-400 px-2 py-1 text-black"> Save </button>
         </div>
     </form>
-</dialog>
+</Modal>
