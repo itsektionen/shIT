@@ -3,23 +3,19 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "$lib/server/db";
 import { buttonTable, collectionTable } from "$lib/server/db/schema";
 import * as vb from "valibot";
-import { redirect } from "@sveltejs/kit";
+import { invalid, redirect } from "@sveltejs/kit";
 import path from "path";
-import { buttonFormSchema, collectionFormSchema } from "$lib/schemas";
+import { buttonFormSchema, collectionFormSchema, createCollectionSchema } from "$lib/schemas";
+import { isKnownScript } from "$lib/server/scripts";
 
 export const getCollections = query(async () => {
     return await db.select().from(collectionTable);
 });
-export const createCollection = form(
-    vb.object({
-        label: vb.string(),
-    }),
-    async (data) => {
-        const result = await db.insert(collectionTable).values(data).returning();
-        await getCollections().refresh();
-        redirect(303, `/col/${result[0].id}`);
-    },
-);
+export const createCollection = form(createCollectionSchema, async (data) => {
+    const result = await db.insert(collectionTable).values(data).returning();
+    await getCollections().refresh();
+    redirect(303, `/col/${result[0].id}`);
+});
 export const editCollection = form(collectionFormSchema, async ({ id, color, ...newData }) => {
     await db
         .update(collectionTable)
@@ -81,26 +77,33 @@ export const createButton = command(
         };
     },
 );
-export const editButton = form(buttonFormSchema, async ({ id, color, iconId, ...newData }) => {
-    const collectionId = await db.transaction(async (tx) => {
-        const button = await tx
-            .select()
-            .from(buttonTable)
-            .where(eq(buttonTable.id, id))
-            .then((res) => res[0]);
+export const editButton = form(
+    buttonFormSchema,
+    async ({ id, color, iconId, ...newData }, issue) => {
+        const collectionId = await db.transaction(async (tx) => {
+            const button = await tx
+                .select()
+                .from(buttonTable)
+                .where(eq(buttonTable.id, id))
+                .then((res) => res[0]);
 
-        if (!button) return null;
-        await tx
-            .update(buttonTable)
-            .set({ ...newData, color: color || null, iconId: iconId || null })
-            .where(eq(buttonTable.id, id));
-        return button.collectionId;
-    });
-    if (collectionId) {
-        await getButtons(collectionId).refresh();
-    }
-    return { success: collectionId !== null };
-});
+            if (!button) return null;
+            // Only check changed scripts
+            if (newData.script !== button.script && !isKnownScript(newData.script)) {
+                invalid(issue.script("Script not found"));
+            }
+            await tx
+                .update(buttonTable)
+                .set({ ...newData, color: color || null, iconId: iconId || null })
+                .where(eq(buttonTable.id, id));
+            return button.collectionId;
+        });
+        if (collectionId) {
+            await getButtons(collectionId).refresh();
+        }
+        return { success: collectionId !== null };
+    },
+);
 export const reorderButtons = command(vb.array(vb.string()), async (orderedIds) => {
     await db.transaction(async (tx) => {
         for (let i = 0; i < orderedIds.length; i++) {

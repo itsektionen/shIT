@@ -3,11 +3,7 @@
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
 
     import type { collectionTable } from "$lib/server/db/schema";
-    import {
-        deleteCollection,
-        editCollection as editCollectionForm,
-        getCollections,
-    } from "$lib/db.remote";
+    import { deleteCollection, editCollection, getCollections } from "$lib/db.remote";
     import { collectionFormSchema } from "$lib/schemas";
     import { onMount } from "svelte";
     import ColorSelector from "../ColorSelector.svelte";
@@ -24,6 +20,8 @@
         collection: Collection;
         onclose: () => void;
     } = $props();
+
+    const editCollectionForm = $derived(editCollection.for(passedCollection.id));
 
     onMount(() => {
         editCollectionForm.fields.set({
@@ -52,6 +50,8 @@
                     cols.map((col) => (col.id === passedCollection.id ? { ...col, ...data } : col)),
                 ),
             );
+            // Rejected by the server
+            if (editCollectionForm.fields.allIssues()?.length) return;
             onclose();
         })}
         class={["border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}
@@ -115,7 +115,13 @@
             >
                 Cancel
             </button>
-            <button type="submit" class="bg-green-400 px-2 py-1 text-black"> Save </button>
+            <button
+                type="submit"
+                class="bg-green-400 px-2 py-1 text-black disabled:opacity-50"
+                disabled={editCollectionForm.pending > 0}
+            >
+                Save
+            </button>
         </div>
     </form>
 </Modal>

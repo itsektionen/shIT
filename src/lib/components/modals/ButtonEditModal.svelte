@@ -6,7 +6,7 @@
 
     import type { buttonTable } from "$lib/server/db/schema";
     import IconSearchResults from "../IconSearchResults.svelte";
-    import { deleteButton, editButton as editButtonForm, getButtons } from "$lib/db.remote";
+    import { deleteButton, editButton, getButtons } from "$lib/db.remote";
     import { buttonFormSchema } from "$lib/schemas";
     import Icon from "@iconify/svelte";
     import { getScriptsContext } from "$lib/context";
@@ -26,6 +26,8 @@
         onclose: () => void;
     } = $props();
 
+    const editButtonForm = $derived(editButton.for(passedButton.id));
+
     onMount(() => {
         editButtonForm.fields.set({
             id: passedButton.id,
@@ -44,7 +46,7 @@
         return name ? `${ICON_PREFIX}:${name}` : "";
     }
 
-    // Escape hides the suggestions first, instead of closing the whole modal
+    // Escape closes the suggestions first
     let iconSuggestionsDismissed = $state(false);
     function onIconKeydown(e: KeyboardEvent) {
         if (e.key === "Escape" && !iconSuggestionsDismissed) {
@@ -53,7 +55,7 @@
             iconSuggestionsDismissed = true;
             if (e.target instanceof HTMLElement) e.target.blur();
         } else if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
-            // Don't submit the form while picking an icon
+            // Enter shouldn't submit from here
             e.preventDefault();
         }
     }
@@ -79,6 +81,8 @@
                     btns.map((btn) => (btn.id === passedButton.id ? { ...btn, ...data } : btn)),
                 ),
             );
+            // Rejected by the server. Keep open
+            if (editButtonForm.fields.allIssues()?.length) return;
             onclose();
         })}
         class={["border-2 bg-background p-4 shadow-xl", "flex flex-col gap-4"]}
@@ -236,7 +240,13 @@
             >
                 Cancel
             </button>
-            <button type="submit" class="bg-green-400 px-2 py-1 text-black"> Save </button>
+            <button
+                type="submit"
+                class="bg-green-400 px-2 py-1 text-black disabled:opacity-50"
+                disabled={editButtonForm.pending > 0}
+            >
+                Save
+            </button>
         </div>
     </form>
 </Modal>

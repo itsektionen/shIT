@@ -18,3 +18,6 @@ export const buttonFormSchema = vb.object({
     ]),
     iconId: vb.string(), // empty string = null
 });
+export const createCollectionSchema = vb.object({
+    label: collectionFormSchema.entries.label,
+});
