@@ -7,7 +7,7 @@ import { isKnownScript } from "./server/scripts";
 export const runScript = command(vb.string(), async (scriptPath) => {
     if (!mqttClient.connected) {
         console.error("MQTT client is not connected. Cannot run scripts.");
-        return;
+        error(503, "LMixer is not connected");
     }
     if (!isKnownScript(scriptPath)) error(400, "Unknown script");
     console.log("Running script:", scriptPath);

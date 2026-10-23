@@ -2,6 +2,9 @@
     import PlayIcon from "@iconify-svelte/material-symbols/play-arrow-rounded";
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
     import WarnIcon from "@iconify-svelte/material-symbols/warning-rounded";
+    import SpinnerIcon from "@iconify-svelte/material-symbols/progress-activity";
+    import DoneIcon from "@iconify-svelte/material-symbols/check-rounded";
+    import FailIcon from "@iconify-svelte/material-symbols/error-rounded";
 
     import Icon from "@iconify/svelte";
     import type { buttonTable } from "$lib/server/db/schema";
@@ -21,6 +24,22 @@
     let isInvalidScript = $derived(scripts.paths && !scripts.paths.includes(btn.script));
 
     let editMode = getEditModeContext();
+
+    let runState = $state<"idle" | "running" | "done" | "failed">("idle");
+    let runError = $state("");
+    let resetTimeout: ReturnType<typeof setTimeout>;
+    async function run() {
+        clearTimeout(resetTimeout);
+        runState = "running";
+        try {
+            await runScript(btn.script);
+            runState = "done";
+        } catch (error) {
+            runState = "failed";
+            runError = error instanceof Error ? error.message : "Failed to run";
+        }
+        resetTimeout = setTimeout(() => (runState = "idle"), 3000);
+    }
 </script>
 
 <div
@@ -32,7 +51,9 @@
     ]}
     style:--bg={btn.color || undefined}
     style:background={btn.color || undefined}
-    title={`Script: "${btn.script}"${isInvalidScript ? " (not found)" : ""}`}
+    title={runState === "failed"
+        ? runError
+        : `Script: "${btn.script}"${isInvalidScript ? " (not found)" : ""}`}
 >
     <button
         class="size-full cursor-pointer truncate overflow-hidden px-4 text-xl font-semibold"
@@ -41,7 +62,7 @@
                 onEdit?.(btn);
             } else {
                 if (confirmScriptExecution(btn.label)) {
-                    runScript(btn.script);
+                    run();
                 }
             }
         }}
@@ -51,19 +72,33 @@
         {/if}
         <span>{btn.label}</span>
     </button>
-        <div
-            class={[
-                "pointer-events-none absolute top-0 right-0 flex h-6 min-w-6 items-center",
-            !isInvalidScript &&
+    <div
+        class={[
+            "pointer-events-none absolute top-0 right-0 flex h-6 min-w-6 items-center",
+            runState === "idle" &&
+                !isInvalidScript &&
                 "not-pointer-coarse:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
-            ]}
-        >
-            {#if isInvalidScript}
-                <WarnIcon class="size-6" />
+        ]}
+    >
+        {#if runState === "running"}
+            <SpinnerIcon class="size-6 animate-spin" />
+        {:else if runState === "done"}
+            <DoneIcon class="size-6" />
+        {:else if runState === "failed"}
+            <FailIcon class="size-6" />
+        {:else if isInvalidScript}
+            <WarnIcon class="size-6" />
         {:else if editMode.isEditing}
             <EditIcon class="size-6" />
-            {:else}
+        {:else}
             <PlayIcon class="size-6" />
-            {/if}
-        </div>
+        {/if}
+    </div>
+    <span class="sr-only" role="status">
+        {#if runState === "done"}
+            Script started
+        {:else if runState === "failed"}
+            {runError}
+        {/if}
+    </span>
 </div>
