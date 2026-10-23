@@ -43,6 +43,20 @@
         return name ? `${ICON_PREFIX}:${name}` : "";
     }
 
+    // Escape hides the suggestions first, instead of closing the whole modal
+    let iconSuggestionsDismissed = $state(false);
+    function onIconKeydown(e: KeyboardEvent) {
+        if (e.key === "Escape" && !iconSuggestionsDismissed) {
+            e.preventDefault();
+            e.stopPropagation();
+            iconSuggestionsDismissed = true;
+            if (e.target instanceof HTMLElement) e.target.blur();
+        } else if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
+            // Don't submit the form while picking an icon
+            e.preventDefault();
+        }
+    }
+
     let scripts = getScriptsContext();
 </script>
 
@@ -118,7 +132,7 @@
             {#each editButtonForm.fields.iconId.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
-            <div class="group relative">
+            <div class="group relative" onkeydown={onIconKeydown} role="presentation">
                 <!-- a hidden input to pass the value to the form. prevents having to expose the prefix to the user -->
                 <input {...editButtonForm.fields.iconId.as("text")} class="hidden" />
                 <div class="group relative" style:--size="calc(var(--spacing) * 2 + 1lh)">
@@ -134,6 +148,8 @@
                         id="{uid}-icon"
                         class="w-full pr-8 focus-visible:[&+*]:text-brand"
                         autocomplete="off"
+                        oninput={() => (iconSuggestionsDismissed = false)}
+                        onfocus={() => (iconSuggestionsDismissed = false)}
                     />
                     <div
                         class={[
@@ -150,8 +166,9 @@
                 <!-- a datalist doesn't cut it here so we roll our own :/ -->
                 <div
                     class={[
-                        "absolute top-full left-0 z-10 max-h-60 w-full flex-col overflow-y-auto bg-secondary",
-                        "hidden group-focus-within:flex",
+                        "max-h-40 w-full flex-col overflow-y-auto bg-secondary",
+                        "[scrollbar-color:var(--color-border)_transparent] [scrollbar-width:thin]",
+                        iconSuggestionsDismissed ? "hidden" : "hidden group-focus-within:flex",
                     ]}
                 >
                     <IconSearchResults
