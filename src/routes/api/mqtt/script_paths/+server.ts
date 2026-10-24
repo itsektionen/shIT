@@ -1,4 +1,4 @@
-import { scriptPaths, scriptsEmitter } from "$lib/server/scripts";
+import { scriptPaths, scriptsEmitter } from "#lib/server/scripts.js";
 import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = ({ request }) => {

@@ -1,12 +1,12 @@
 import { command, form, query } from "$app/server";
 import { desc, eq } from "drizzle-orm";
-import { db } from "$lib/server/db";
-import { buttonTable, collectionTable } from "$lib/server/db/schema";
+import { db } from "#lib/server/db/index.js";
+import { buttonTable, collectionTable } from "#lib/server/db/schema.js";
 import * as vb from "valibot";
 import { invalid, redirect } from "@sveltejs/kit";
 import path from "path";
-import { buttonFormSchema, collectionFormSchema, createCollectionSchema } from "$lib/schemas";
-import { isKnownScript } from "$lib/server/scripts";
+import { buttonFormSchema, collectionFormSchema, createCollectionSchema } from "#lib/schemas.js";
+import { isKnownScript } from "#lib/server/scripts.js";
 
 export const getCollections = query(async () => {
     return await db.select().from(collectionTable);

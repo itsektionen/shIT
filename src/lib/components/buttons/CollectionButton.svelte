@@ -2,8 +2,8 @@
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
 
     import { resolve } from "$app/paths";
-    import type { collectionTable } from "$lib/server/db/schema";
-    import { getEditModeContext } from "$lib/context";
+    import type { collectionTable } from "#lib/server/db/schema.js";
+    import { getEditModeContext } from "#lib/context.js";
 
     type Collection = typeof collectionTable.$inferSelect;
     let {

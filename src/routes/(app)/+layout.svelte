@@ -3,25 +3,25 @@
     import fuzzysort from "fuzzysort";
     import { resolve } from "$app/paths";
 
-    import Sidebar from "$lib/components/Sidebar.svelte";
-    import SidebarToggleButton from "$lib/components/SidebarToggleButton.svelte";
-    import ScriptTree from "$lib/components/ScriptTree.svelte";
-    import CollectionButton from "$lib/components/buttons/CollectionButton.svelte";
-    import CollectionEditModal from "$lib/components/modals/CollectionEditModal.svelte";
+    import Sidebar from "#lib/components/Sidebar.svelte";
+    import SidebarToggleButton from "#lib/components/SidebarToggleButton.svelte";
+    import ScriptTree from "#lib/components/ScriptTree.svelte";
+    import CollectionButton from "#lib/components/buttons/CollectionButton.svelte";
+    import CollectionEditModal from "#lib/components/modals/CollectionEditModal.svelte";
 
     import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
-    import { createCollection, getCollections } from "$lib/db.remote";
-    import { createCollectionSchema } from "$lib/schemas";
+    import { createCollection, getCollections } from "#lib/db.remote.js";
+    import { createCollectionSchema } from "#lib/schemas.js";
     import { onMount } from "svelte";
     import {
         getScriptsContext,
         setCollectionContext,
         setEditModeContext,
         setScriptsContext,
-    } from "$lib/context";
-    import TitleBar from "$lib/components/TitleBar.svelte";
+    } from "#lib/context.js";
+    import TitleBar from "#lib/components/TitleBar.svelte";
 
-    import type { collectionTable } from "$lib/server/db/schema";
+    import type { collectionTable } from "#lib/server/db/schema.js";
 
     type Collection = typeof collectionTable.$inferSelect;
 
@@ -41,7 +41,7 @@
     let scripts = $state<ReturnType<typeof setScriptsContext>>({ paths: undefined });
     setScriptsContext(scripts);
     onMount(() => {
-        const eventSource = new EventSource(resolve("/api/mqtt/script_paths"));
+        const eventSource = new EventSource(resolve("api/mqtt/script_paths"));
         eventSource.onmessage = (event) => {
             scripts.paths = JSON.parse(event.data);
         };

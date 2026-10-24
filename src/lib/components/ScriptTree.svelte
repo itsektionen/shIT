@@ -23,9 +23,13 @@
 
     import { MediaQuery, SvelteMap } from "svelte/reactivity";
     import ScriptTree from "./ScriptTree.svelte";
-    import { runScript } from "$lib/lmixer.remote";
-    import { createButton } from "$lib/db.remote";
-    import { confirmScriptExecution, getCollectionContext, getEditModeContext } from "$lib/context";
+    import { runScript } from "#lib/lmixer.remote.js";
+    import { createButton } from "#lib/db.remote.js";
+    import {
+        confirmScriptExecution,
+        getCollectionContext,
+        getEditModeContext,
+    } from "#lib/context.js";
 
     function constructTree(paths: string[]): TreeNode[] {
         const tree: TreeNode[] = [];

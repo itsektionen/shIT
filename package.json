@@ -24,6 +24,7 @@
         "@iconify/svelte": "^5.2.1",
         "@sveltejs/adapter-node": "^6.0.0",
         "@sveltejs/kit": "^3.1.0",
+        "@sveltejs/load-config": "^0.2.2",
         "@sveltejs/vite-plugin-svelte": "^7.3.1",
         "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/vite": "^4.2.1",
@@ -40,7 +41,7 @@
         "prettier-plugin-tailwindcss": "^0.7.2",
         "sortablejs": "^1.15.7",
         "svelte": "^5.57.2",
-        "svelte-check": "^4.4.4",
+        "svelte-check": "^4.7.5",
         "tailwindcss": "^4.2.1",
         "typescript": "^6",
         "typescript-eslint": "^8.56.1",
@@ -52,5 +53,9 @@
         "@libsql/client": "^0.17.0",
         "drizzle-kit": "^1.0.0-rc.5",
         "drizzle-orm": "^1.0.0-rc.5"
+    },
+    "imports": {
+        "#lib": "./src/lib/index.js",
+        "#lib/*": "./src/lib/*"
     }
 }

@@ -2,9 +2,9 @@
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
 
-    import type { collectionTable } from "$lib/server/db/schema";
-    import { deleteCollection, editCollection, getCollections } from "$lib/db.remote";
-    import { collectionFormSchema } from "$lib/schemas";
+    import type { collectionTable } from "#lib/server/db/schema.js";
+    import { deleteCollection, editCollection, getCollections } from "#lib/db.remote.js";
+    import { collectionFormSchema } from "#lib/schemas.js";
     import { onMount } from "svelte";
     import ColorSelector from "../ColorSelector.svelte";
     import Modal from "../Modal.svelte";
