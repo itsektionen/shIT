@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { getEditModeContext } from "$lib/context";
+    import { getEditModeContext } from "#lib/context.js";
 
-    import acronymsString from "$lib/acronyms.txt?raw";
-    import logo from "$lib/assets/SMN Logo.svg";
+    import acronymsString from "#lib/acronyms.txt?raw";
+    import logo from "#lib/assets/SMN Logo.svg";
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
     import ReadIcon from "@iconify-svelte/material-symbols/terminal-rounded";
 

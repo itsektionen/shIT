@@ -4,12 +4,12 @@
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
     import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
 
-    import type { buttonTable } from "$lib/server/db/schema";
+    import type { buttonTable } from "#lib/server/db/schema.js";
     import IconSearchResults from "../IconSearchResults.svelte";
-    import { deleteButton, editButton, getButtons } from "$lib/db.remote";
-    import { buttonFormSchema } from "$lib/schemas";
+    import { deleteButton, editButton, getButtons } from "#lib/db.remote.js";
+    import { buttonFormSchema } from "#lib/schemas.js";
     import Icon from "@iconify/svelte";
-    import { getScriptsContext } from "$lib/context";
+    import { getScriptsContext } from "#lib/context.js";
     import ScriptButton from "../buttons/ScriptButton.svelte";
     import { onMount } from "svelte";
     import fuzzysort from "fuzzysort";
@@ -82,12 +82,15 @@
     {/snippet}
 
     <form
-        {...editButtonForm.preflight(buttonFormSchema).enhance(async ({ data, submit }) => {
-            await submit().updates(
-                getButtons(passedButton.collectionId).withOverride((btns) =>
-                    btns.map((btn) => (btn.id === passedButton.id ? { ...btn, ...data } : btn)),
-                ),
-            );
+        {...editButtonForm.preflight(buttonFormSchema).enhance(async (form) => {
+            const data = form.fields.value();
+            await form
+                .submit()
+                .updates(
+                    getButtons(passedButton.collectionId).withOverride((btns) =>
+                        btns.map((btn) => (btn.id === passedButton.id ? { ...btn, ...data } : btn)),
+                    ),
+                );
             // Rejected by the server. Keep open
             if (editButtonForm.fields.allIssues()?.length) return;
             onclose();

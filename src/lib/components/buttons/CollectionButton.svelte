@@ -2,8 +2,8 @@
     import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
 
     import { resolve } from "$app/paths";
-    import type { collectionTable } from "$lib/server/db/schema";
-    import { getEditModeContext } from "$lib/context";
+    import type { collectionTable } from "#lib/server/db/schema.js";
+    import { getEditModeContext } from "#lib/context.js";
 
     type Collection = typeof collectionTable.$inferSelect;
     let {
@@ -32,7 +32,9 @@
 >
     <a
         class="flex size-full shrink cursor-pointer items-center truncate overflow-hidden px-2 text-xl font-semibold"
-        href={resolve(isCurrent ? "/" : `/col/${col.id}`)}
+        href={isCurrent
+            ? resolve("/(app)")
+            : resolve("/(app)/col/[collection]", { collection: col.id })}
     >
         <span>{col.label}</span>
     </a>

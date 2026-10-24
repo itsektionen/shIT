@@ -2,9 +2,9 @@
     import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
     import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
 
-    import type { collectionTable } from "$lib/server/db/schema";
-    import { deleteCollection, editCollection, getCollections } from "$lib/db.remote";
-    import { collectionFormSchema } from "$lib/schemas";
+    import type { collectionTable } from "#lib/server/db/schema.js";
+    import { deleteCollection, editCollection, getCollections } from "#lib/db.remote.js";
+    import { collectionFormSchema } from "#lib/schemas.js";
     import { onMount } from "svelte";
     import ColorSelector from "../ColorSelector.svelte";
     import Modal from "../Modal.svelte";
@@ -44,12 +44,17 @@
     {/snippet}
 
     <form
-        {...editCollectionForm.preflight(collectionFormSchema).enhance(async ({ data, submit }) => {
-            await submit().updates(
-                getCollections().withOverride((cols) =>
-                    cols.map((col) => (col.id === passedCollection.id ? { ...col, ...data } : col)),
-                ),
-            );
+        {...editCollectionForm.preflight(collectionFormSchema).enhance(async (form) => {
+            const data = form.fields.value();
+            await form
+                .submit()
+                .updates(
+                    getCollections().withOverride((cols) =>
+                        cols.map((col) =>
+                            col.id === passedCollection.id ? { ...col, ...data } : col,
+                        ),
+                    ),
+                );
             // Rejected by the server
             if (editCollectionForm.fields.allIssues()?.length) return;
             onclose();

@@ -22,4 +22,4 @@
 <meta name="apple-mobile-web-app-title" content="shIT" />
 
 <!-- Resolved becasue it is a real api endpoint -->
-<link rel="manifest" href={resolve("/site.webmanifest")} />
+<link rel="manifest" href={resolve("site.webmanifest")} />
