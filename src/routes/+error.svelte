@@ -24,17 +24,20 @@
     <p class="text-xl">{page.error?.message}</p>
 
     <div class="flex flex-row gap-8">
-        {#if page.status !== 404}
+        {#if page.status >= 500}
             <button
-                class="mt-2 flex flex-row items-center gap-1 font-semibold"
+                class="mt-2 flex cursor-pointer flex-row items-center gap-1 font-semibold"
                 onclick={() => window.location.reload()}
             >
                 <RetryIcon class="size-[1lh]" />
-                Retry
+                Reload
             </button>
         {/if}
 
-        <a class="mt-2 flex flex-row items-center gap-1 font-semibold" href={resolve("/(app)")}>
+        <a
+            class="mt-2 flex cursor-pointer flex-row items-center gap-1 font-semibold"
+            href={resolve("/(app)")}
+        >
             <HomeIcon class="size-[1lh]" />
             Go Home
         </a>
