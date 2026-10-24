@@ -32,7 +32,9 @@
 >
     <a
         class="flex size-full shrink cursor-pointer items-center truncate overflow-hidden px-2 text-xl font-semibold"
-        href={resolve(isCurrent ? "/" : `/col/${col.id}`)}
+        href={isCurrent
+            ? resolve("/(app)")
+            : resolve("/(app)/col/[collection]", { collection: col.id })}
     >
         <span>{col.label}</span>
     </a>

@@ -2,6 +2,7 @@
     "extends": "$app/tsconfig",
     "compilerOptions": {
         "rewriteRelativeImportExtensions": true,
+        "noUncheckedSideEffectImports": false,
         "sourceMap": true,
         "strict": true
     },

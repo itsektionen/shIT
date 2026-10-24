@@ -82,12 +82,15 @@
     {/snippet}
 
     <form
-        {...editButtonForm.preflight(buttonFormSchema).enhance(async ({ data, submit }) => {
-            await submit().updates(
-                getButtons(passedButton.collectionId).withOverride((btns) =>
-                    btns.map((btn) => (btn.id === passedButton.id ? { ...btn, ...data } : btn)),
-                ),
-            );
+        {...editButtonForm.preflight(buttonFormSchema).enhance(async (form) => {
+            const data = form.fields.value();
+            await form
+                .submit()
+                .updates(
+                    getButtons(passedButton.collectionId).withOverride((btns) =>
+                        btns.map((btn) => (btn.id === passedButton.id ? { ...btn, ...data } : btn)),
+                    ),
+                );
             // Rejected by the server. Keep open
             if (editButtonForm.fields.allIssues()?.length) return;
             onclose();

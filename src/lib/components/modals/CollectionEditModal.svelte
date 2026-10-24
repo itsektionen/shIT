@@ -44,12 +44,17 @@
     {/snippet}
 
     <form
-        {...editCollectionForm.preflight(collectionFormSchema).enhance(async ({ data, submit }) => {
-            await submit().updates(
-                getCollections().withOverride((cols) =>
-                    cols.map((col) => (col.id === passedCollection.id ? { ...col, ...data } : col)),
-                ),
-            );
+        {...editCollectionForm.preflight(collectionFormSchema).enhance(async (form) => {
+            const data = form.fields.value();
+            await form
+                .submit()
+                .updates(
+                    getCollections().withOverride((cols) =>
+                        cols.map((col) =>
+                            col.id === passedCollection.id ? { ...col, ...data } : col,
+                        ),
+                    ),
+                );
             // Rejected by the server
             if (editCollectionForm.fields.allIssues()?.length) return;
             onclose();
