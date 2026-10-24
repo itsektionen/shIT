@@ -20,18 +20,19 @@
 </script>
 
 <div
-    class={[
-        "group relative h-10 w-full text-wrap select-none hover:opacity-80",
-        "flex flex-row items-center justify-center",
-        "bg-secondary hover:opacity-80 **:focus-visible:opacity-80 has-[>:first-child:active]:scale-95",
-        col.color && "text-contrast",
-        isCurrent && "outline-2 outline-offset-2 outline-brand",
-    ]}
+    class={["group relative h-10 w-full text-wrap select-none", col.color && "text-contrast"]}
     style:--bg={col.color || undefined}
-    style:background={col.color || undefined}
 >
     <a
-        class="flex size-full shrink cursor-pointer items-center truncate overflow-hidden px-2 text-xl font-semibold"
+        class={[
+            "tile-button flex size-full cursor-pointer items-center truncate overflow-hidden px-2",
+            "bg-secondary text-xl font-semibold",
+            "group-hover:opacity-80 focus-visible:opacity-80 active:scale-95",
+            isCurrent && "outline-2 outline-offset-2 outline-brand",
+            // The edit button sits over the end of the tile.
+            onEdit && editMode.isEditing && "pr-10 pointer-coarse:pr-15",
+        ]}
+        style:background={col.color || undefined}
         href={isCurrent
             ? resolve("/(app)")
             : resolve("/(app)/col/[collection]", { collection: col.id })}
@@ -41,7 +42,7 @@
     {#if onEdit && editMode.isEditing}
         <button
             class={[
-                "h-10 w-10 shrink-0 pointer-coarse:w-15",
+                "absolute inset-y-0 right-0 w-10 pointer-coarse:w-15",
                 "flex flex-row items-center justify-end pr-2",
                 "hover:bg-background/50 hover:text-brand",
             ]}

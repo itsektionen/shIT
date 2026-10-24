@@ -24,7 +24,7 @@
         onclick={() => {
             editMode.isEditing = !editMode.isEditing;
         }}
-        class="mr-2 flex flex-row items-center justify-start"
+        class="icon-button flex size-9 shrink-0 items-center justify-center self-center justify-self-start"
     >
         {#if editMode.isEditing}
             <span title="Editing"><EditIcon class="size-7"></EditIcon></span>
