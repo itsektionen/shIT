@@ -80,6 +80,7 @@
             <input
                 bind:value={collectionQuery}
                 type="search"
+                name="collection-search"
                 aria-label="Search collections"
                 placeholder="Search"
                 class="h-7 min-w-0 grow"
@@ -156,6 +157,7 @@
             <input
                 bind:value={scriptQuery}
                 type="search"
+                name="script-search"
                 aria-label="Search scripts"
                 placeholder="Search"
                 class="h-7 min-w-0 grow"
