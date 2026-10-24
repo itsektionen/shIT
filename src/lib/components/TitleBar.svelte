@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { resolve } from "$app/paths";
     import { getEditModeContext } from "#lib/context.js";
 
     import acronymsString from "#lib/acronyms.txt?raw";
@@ -32,12 +33,15 @@
             <span title="Running"><ReadIcon class="size-7"></ReadIcon></span>
         {/if}
     </button>
-    <span class="flex flex-row items-center justify-center gap-2 overflow-hidden">
-        <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
+    <a
+        href={resolve("/(app)")}
+        class="flex flex-row items-center justify-center gap-2 overflow-hidden"
+    >
+        <img src={logo} alt="" class="size-8 lg:hidden" />
         <h1>shIT</h1>
-        <img src={logo} alt="SMN Logo" class="size-8" />
+        <img src={logo} alt="" class="size-8" />
         <span class="truncate text-2xl text-nowrap not-lg:hidden">
             {acronym}
         </span>
-    </span>
+    </a>
 </span>
