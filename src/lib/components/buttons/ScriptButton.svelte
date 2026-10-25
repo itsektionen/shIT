@@ -1,10 +1,10 @@
 <script lang="ts">
-    import PlayIcon from "@iconify-svelte/material-symbols/play-arrow-rounded";
-    import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
-    import WarnIcon from "@iconify-svelte/material-symbols/warning-rounded";
-    import SpinnerIcon from "@iconify-svelte/material-symbols/progress-activity";
-    import DoneIcon from "@iconify-svelte/material-symbols/check-rounded";
-    import FailIcon from "@iconify-svelte/material-symbols/error-rounded";
+    import PlayIcon from "~icons/material-symbols/play-arrow-rounded";
+    import EditIcon from "~icons/material-symbols/edit-rounded";
+    import WarnIcon from "~icons/material-symbols/warning-rounded";
+    import SpinnerIcon from "~icons/material-symbols/progress-activity";
+    import DoneIcon from "~icons/material-symbols/check-rounded";
+    import FailIcon from "~icons/material-symbols/error-rounded";
 
     import Icon from "../Icon.svelte";
     import type { buttonTable } from "#lib/server/db/schema.js";

@@ -4,8 +4,8 @@
 
     import acronymsString from "#lib/acronyms.txt?raw";
     import logo from "#lib/assets/SMN Logo.svg";
-    import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
-    import ReadIcon from "@iconify-svelte/material-symbols/terminal-rounded";
+    import EditIcon from "~icons/material-symbols/edit-rounded";
+    import ReadIcon from "~icons/material-symbols/terminal-rounded";
 
     const acronyms: string[] = acronymsString
         .split("\n")

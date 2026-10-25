@@ -9,7 +9,7 @@
     import CollectionButton from "#lib/components/buttons/CollectionButton.svelte";
     import CollectionEditModal from "#lib/components/modals/CollectionEditModal.svelte";
 
-    import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
+    import AddIcon from "~icons/material-symbols/add-2-rounded";
     import { createCollection, getCollections } from "#lib/db.remote.js";
     import { createCollectionSchema } from "#lib/schemas.js";
     import { onMount } from "svelte";

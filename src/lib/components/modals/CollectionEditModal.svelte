@@ -1,6 +1,6 @@
 <script lang="ts">
-    import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
-    import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
+    import LabelIcon from "~icons/material-symbols/text-fields";
+    import ColorIcon from "~icons/material-symbols/colorize-rounded";
 
     import type { collectionTable } from "#lib/server/db/schema.js";
     import { deleteCollection, editCollection, getCollections } from "#lib/db.remote.js";

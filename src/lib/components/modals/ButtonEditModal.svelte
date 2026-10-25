@@ -1,8 +1,8 @@
 <script lang="ts">
-    import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
-    import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
-    import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
-    import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
+    import LabelIcon from "~icons/material-symbols/text-fields";
+    import IconIcon from "~icons/material-symbols/image-rounded";
+    import ColorIcon from "~icons/material-symbols/colorize-rounded";
+    import ScriptIcon from "~icons/material-symbols/code-rounded";
 
     import type { buttonTable } from "#lib/server/db/schema.js";
     import IconSearchResults from "../IconSearchResults.svelte";

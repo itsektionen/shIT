@@ -1,8 +1,8 @@
 <script lang="ts">
-    import LeftPanelOpen from "@iconify-svelte/material-symbols/left-panel-open-rounded";
-    import LeftPanelClose from "@iconify-svelte/material-symbols/left-panel-close-rounded";
-    import RightPanelOpen from "@iconify-svelte/material-symbols/right-panel-open-rounded";
-    import RightPanelClose from "@iconify-svelte/material-symbols/right-panel-close-rounded";
+    import LeftPanelOpen from "~icons/material-symbols/left-panel-open-rounded";
+    import LeftPanelClose from "~icons/material-symbols/left-panel-close-rounded";
+    import RightPanelOpen from "~icons/material-symbols/right-panel-open-rounded";
+    import RightPanelClose from "~icons/material-symbols/right-panel-close-rounded";
     import type { ClassValue } from "svelte/elements";
 
     let {
@@ -29,5 +29,5 @@
     onclick={() => (open = !open)}
     aria-label={open ? "Close sidebar" : "Open sidebar"}
 >
-    <ToggleIcon />
+    <ToggleIcon class="size-full" />
 </button>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
+    import EditIcon from "~icons/material-symbols/edit-rounded";
 
     import { resolve } from "$app/paths";
     import type { collectionTable } from "#lib/server/db/schema.js";

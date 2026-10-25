@@ -1,6 +1,6 @@
 <script lang="ts">
-    import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
-    import ReadIcon from "@iconify-svelte/material-symbols/terminal-rounded";
+    import EditIcon from "~icons/material-symbols/edit-rounded";
+    import ReadIcon from "~icons/material-symbols/terminal-rounded";
 </script>
 
 <main class="flex grow justify-center p-6">

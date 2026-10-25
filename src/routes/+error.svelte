@@ -1,8 +1,8 @@
 <script lang="ts">
     import { resolve } from "$app/paths";
     import { page } from "$app/state";
-    import HomeIcon from "@iconify-svelte/material-symbols/keyboard-return-rounded";
-    import RetryIcon from "@iconify-svelte/material-symbols/refresh-rounded";
+    import HomeIcon from "~icons/material-symbols/keyboard-return-rounded";
+    import RetryIcon from "~icons/material-symbols/refresh-rounded";
 
     const codeColors: Record<number, string | undefined> = {
         200: "#9ae600",
