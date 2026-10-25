@@ -7,6 +7,7 @@ import { invalid, redirect } from "@sveltejs/kit";
 import path from "path";
 import { buttonFormSchema, collectionFormSchema, createCollectionSchema } from "#lib/schemas.js";
 import { isKnownScript } from "#lib/server/scripts.js";
+import { resolveIcon } from "#lib/server/icons.js";
 
 export const getCollections = query(async () => {
     return await db.select().from(collectionTable);
@@ -91,6 +92,9 @@ export const editButton = form(
             // Only check changed scripts
             if (newData.script !== button.script && !isKnownScript(newData.script)) {
                 invalid(issue.script("Script not found"));
+            }
+            if (iconId && iconId !== button.iconId && !(await resolveIcon(iconId))) {
+                invalid(issue.iconId("Unknown icon"));
             }
             await tx
                 .update(buttonTable)

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import Icon from "@iconify/svelte";
+    import Icon from "./Icon.svelte";
+    import { searchIcons } from "#lib/icons.remote.js";
 
     let {
         icon = $bindable(),
@@ -11,18 +12,10 @@
         debounce?: number;
     } = $props();
 
-    async function fetchIcons(query: string, count: number = 64): Promise<string[]> {
+    async function fetchIcons(query: string): Promise<string[]> {
         if (!query) return [];
         try {
-            const response = await fetch(
-                `https://api.iconify.design/search?${new URLSearchParams({
-                    query,
-                    prefix: iconPrefix,
-                    limit: count.toString(),
-                }).toString()}`,
-            );
-            const data = await response.json();
-            return data.icons || [];
+            return await searchIcons({ prefix: iconPrefix, query });
         } catch (error) {
             console.error("Failed to fetch icons:", error);
             return [];

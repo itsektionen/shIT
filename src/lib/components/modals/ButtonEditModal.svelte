@@ -8,7 +8,7 @@
     import IconSearchResults from "../IconSearchResults.svelte";
     import { deleteButton, editButton, getButtons } from "#lib/db.remote.js";
     import { buttonFormSchema } from "#lib/schemas.js";
-    import Icon from "@iconify/svelte";
+    import Icon from "../Icon.svelte";
     import { getScriptsContext } from "#lib/context.js";
     import ScriptButton from "../buttons/ScriptButton.svelte";
     import { onMount } from "svelte";
@@ -154,10 +154,7 @@
                             "absolute top-1/2 right-0 -translate-y-1/2 text-border",
                         ]}
                     >
-                        <Icon
-                            icon={editButtonForm.fields.iconId.value() ?? ""}
-                            class="size-(--size)"
-                        />
+                        <Icon icon={editButtonForm.fields.iconId.value()} class="size-(--size)" />
                     </div>
                 </div>
                 {#snippet suggestions()}

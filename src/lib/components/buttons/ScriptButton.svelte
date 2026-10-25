@@ -6,7 +6,7 @@
     import DoneIcon from "@iconify-svelte/material-symbols/check-rounded";
     import FailIcon from "@iconify-svelte/material-symbols/error-rounded";
 
-    import Icon from "@iconify/svelte";
+    import Icon from "../Icon.svelte";
     import type { buttonTable } from "#lib/server/db/schema.js";
     import { runScript } from "#lib/lmixer.remote.js";
     import { confirmScriptExecution, getScriptsContext, getEditModeContext } from "#lib/context.js";
