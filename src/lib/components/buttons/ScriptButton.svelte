@@ -7,9 +7,9 @@
     import FailIcon from "@iconify-svelte/material-symbols/error-rounded";
 
     import Icon from "@iconify/svelte";
-    import type { buttonTable } from "$lib/server/db/schema";
-    import { runScript } from "$lib/lmixer.remote";
-    import { confirmScriptExecution, getScriptsContext, getEditModeContext } from "$lib/context";
+    import type { buttonTable } from "#lib/server/db/schema.js";
+    import { runScript } from "#lib/lmixer.remote.js";
+    import { confirmScriptExecution, getScriptsContext, getEditModeContext } from "#lib/context.js";
 
     type Button = typeof buttonTable.$inferSelect;
     let {

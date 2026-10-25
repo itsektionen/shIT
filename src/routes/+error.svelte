@@ -34,7 +34,7 @@
             </button>
         {/if}
 
-        <a class="mt-2 flex flex-row items-center gap-1 font-semibold" href={resolve("/")}>
+        <a class="mt-2 flex flex-row items-center gap-1 font-semibold" href={resolve("/(app)")}>
             <HomeIcon class="size-[1lh]" />
             Go Home
         </a>

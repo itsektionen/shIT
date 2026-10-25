@@ -2,13 +2,13 @@
     import Sortable from "sortablejs";
     import type { Attachment } from "svelte/attachments";
 
-    import ButtonEditModal from "$lib/components/modals/ButtonEditModal.svelte";
+    import ButtonEditModal from "#lib/components/modals/ButtonEditModal.svelte";
 
     import type { PageProps } from "./$types";
-    import { createButton, getButtons, reorderButtons } from "$lib/db.remote";
-    import { getEditModeContext } from "$lib/context";
-    import ScriptButton from "$lib/components/buttons/ScriptButton.svelte";
-    import type { buttonTable } from "$lib/server/db/schema";
+    import { createButton, getButtons, reorderButtons } from "#lib/db.remote.js";
+    import { getEditModeContext } from "#lib/context.js";
+    import ScriptButton from "#lib/components/buttons/ScriptButton.svelte";
+    import type { buttonTable } from "#lib/server/db/schema.js";
 
     type Button = typeof buttonTable.$inferSelect;
 

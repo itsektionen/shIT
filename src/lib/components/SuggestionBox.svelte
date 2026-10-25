@@ -36,7 +36,7 @@
     <div
         class={[
             "max-h-40 w-full flex-col overflow-y-auto bg-secondary",
-            "[scrollbar-color:var(--color-border)_transparent] [scrollbar-width:thin]",
+            "scrollbar-thin [scrollbar-color:var(--color-border)_transparent]",
             dismissed || !show ? "hidden" : "hidden group-focus-within:flex",
         ]}
     >

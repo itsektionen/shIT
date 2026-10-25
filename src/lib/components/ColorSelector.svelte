@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { RemoteFormField } from "@sveltejs/kit";
+    import type { RemoteFormField } from "$app/server";
     import EraserIcon from "@iconify-svelte/material-symbols/ink-eraser-rounded";
 
     let { field }: { field: RemoteFormField<string> } = $props();

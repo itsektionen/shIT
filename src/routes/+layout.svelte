@@ -2,7 +2,7 @@
     import "./layout.css";
     import "@fontsource/poppins";
     import type { LayoutProps } from "./$types";
-    import MetaTags from "$lib/components/MetaTags.svelte";
+    import MetaTags from "#lib/components/MetaTags.svelte";
 
     let { children }: LayoutProps = $props();
 </script>
