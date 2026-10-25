@@ -1,7 +1,7 @@
 <script lang="ts">
     import { resolve } from "$app/paths";
     import { page } from "$app/state";
-    import HomeIcon from "~icons/material-symbols/keyboard-return-rounded";
+    import HomeIcon from "~icons/material-symbols/home-rounded";
     import RetryIcon from "~icons/material-symbols/refresh-rounded";
 
     const codeColors: Record<number, string | undefined> = {
