@@ -1,14 +1,14 @@
 <script lang="ts">
-    import LabelIcon from "@iconify-svelte/material-symbols/text-fields";
-    import IconIcon from "@iconify-svelte/material-symbols/image-rounded";
-    import ColorIcon from "@iconify-svelte/material-symbols/colorize-rounded";
-    import ScriptIcon from "@iconify-svelte/material-symbols/code-rounded";
+    import LabelIcon from "~icons/material-symbols/text-fields";
+    import IconIcon from "~icons/material-symbols/image-rounded";
+    import ColorIcon from "~icons/material-symbols/colorize-rounded";
+    import ScriptIcon from "~icons/material-symbols/code-rounded";
 
     import type { buttonTable } from "#lib/server/db/schema.js";
     import IconSearchResults from "../IconSearchResults.svelte";
     import { deleteButton, editButton, getButtons } from "#lib/db.remote.js";
     import { buttonFormSchema } from "#lib/schemas.js";
-    import Icon from "@iconify/svelte";
+    import Icon from "../Icon.svelte";
     import { getScriptsContext } from "#lib/context.js";
     import ScriptButton from "../buttons/ScriptButton.svelte";
     import { onMount } from "svelte";
@@ -154,10 +154,7 @@
                             "absolute top-1/2 right-0 -translate-y-1/2 text-border",
                         ]}
                     >
-                        <Icon
-                            icon={editButtonForm.fields.iconId.value() ?? ""}
-                            class="size-(--size)"
-                        />
+                        <Icon icon={editButtonForm.fields.iconId.value()} class="size-(--size)" />
                     </div>
                 </div>
                 {#snippet suggestions()}

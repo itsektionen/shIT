@@ -1,12 +1,12 @@
 <script lang="ts">
-    import PlayIcon from "@iconify-svelte/material-symbols/play-arrow-rounded";
-    import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
-    import WarnIcon from "@iconify-svelte/material-symbols/warning-rounded";
-    import SpinnerIcon from "@iconify-svelte/material-symbols/progress-activity";
-    import DoneIcon from "@iconify-svelte/material-symbols/check-rounded";
-    import FailIcon from "@iconify-svelte/material-symbols/error-rounded";
+    import PlayIcon from "~icons/material-symbols/play-arrow-rounded";
+    import EditIcon from "~icons/material-symbols/edit-rounded";
+    import WarnIcon from "~icons/material-symbols/warning-rounded";
+    import SpinnerIcon from "~icons/material-symbols/progress-activity";
+    import DoneIcon from "~icons/material-symbols/check-rounded";
+    import FailIcon from "~icons/material-symbols/error-rounded";
 
-    import Icon from "@iconify/svelte";
+    import Icon from "../Icon.svelte";
     import type { buttonTable } from "#lib/server/db/schema.js";
     import { runScript } from "#lib/lmixer.remote.js";
     import { confirmScriptExecution, getScriptsContext, getEditModeContext } from "#lib/context.js";
@@ -43,20 +43,19 @@
 </script>
 
 <div
-    class={[
-        "group relative min-h-16 w-64 text-wrap select-none",
-        "flex flex-row items-center justify-center",
-        "bg-secondary hover:opacity-80 **:focus-visible:opacity-80 has-[>:first-child:active]:scale-95",
-        btn.color && "text-contrast",
-    ]}
+    class={["group relative w-64 text-wrap select-none", btn.color && "text-contrast"]}
     style:--bg={btn.color || undefined}
-    style:background={btn.color || undefined}
     title={runState === "failed"
         ? runError
         : `Script: "${btn.script}"${isInvalidScript ? " (not found)" : ""}`}
 >
     <button
-        class="size-full cursor-pointer truncate overflow-hidden px-4 text-xl font-semibold"
+        class={[
+            "tile-button min-h-16 w-full cursor-pointer truncate overflow-hidden px-4",
+            "bg-secondary text-xl font-semibold",
+            "group-hover:opacity-80 focus-visible:opacity-80 active:scale-95",
+        ]}
+        style:background={btn.color || undefined}
         onclick={() => {
             if (editMode.isEditing || isInvalidScript) {
                 onEdit?.(btn);

@@ -1,10 +1,11 @@
 <script lang="ts">
+    import { resolve } from "$app/paths";
     import { getEditModeContext } from "#lib/context.js";
 
     import acronymsString from "#lib/acronyms.txt?raw";
     import logo from "#lib/assets/SMN Logo.svg";
-    import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
-    import ReadIcon from "@iconify-svelte/material-symbols/terminal-rounded";
+    import EditIcon from "~icons/material-symbols/edit-rounded";
+    import ReadIcon from "~icons/material-symbols/terminal-rounded";
 
     const acronyms: string[] = acronymsString
         .split("\n")
@@ -24,7 +25,7 @@
         onclick={() => {
             editMode.isEditing = !editMode.isEditing;
         }}
-        class="mr-2 flex flex-row items-center justify-start"
+        class="icon-button flex size-9 shrink-0 items-center justify-center self-center justify-self-start"
     >
         {#if editMode.isEditing}
             <span title="Editing"><EditIcon class="size-7"></EditIcon></span>
@@ -32,12 +33,15 @@
             <span title="Running"><ReadIcon class="size-7"></ReadIcon></span>
         {/if}
     </button>
-    <span class="flex flex-row items-center justify-center gap-2 overflow-hidden">
-        <img src={logo} alt="SMN Logo" class="size-8 lg:hidden" />
+    <a
+        href={resolve("/(app)")}
+        class="flex flex-row items-center justify-center gap-2 overflow-hidden"
+    >
+        <img src={logo} alt="" class="size-8 lg:hidden" />
         <h1>shIT</h1>
-        <img src={logo} alt="SMN Logo" class="size-8" />
+        <img src={logo} alt="" class="size-8" />
         <span class="truncate text-2xl text-nowrap not-lg:hidden">
             {acronym}
         </span>
-    </span>
+    </a>
 </span>

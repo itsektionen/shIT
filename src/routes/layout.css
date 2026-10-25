@@ -40,6 +40,10 @@ body {
     @apply ring-1 ring-brand outline-none;
 }
 
+.tile-button:focus-visible {
+    @apply ring-0 outline-2 outline-solid outline-offset-2 outline-foreground;
+}
+
 .icon-button {
     @apply rounded transition-colors;
     @apply hover:bg-brand/10 hover:text-brand;

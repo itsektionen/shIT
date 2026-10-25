@@ -1,33 +1,29 @@
 <script lang="ts">
-    import { MediaQuery } from "svelte/reactivity";
-    import EditIcon from "@iconify-svelte/material-symbols/edit-rounded";
-    import ReadIcon from "@iconify-svelte/material-symbols/terminal-rounded";
-
-    let querySlim = new MediaQuery("(max-width: 64rem)");
-    let isSlim = $derived(querySlim.current);
-    let queryTouch = new MediaQuery("(pointer: coarse)");
-    let isTouch = $derived(queryTouch.current);
+    import EditIcon from "~icons/material-symbols/edit-rounded";
+    import ReadIcon from "~icons/material-symbols/terminal-rounded";
 </script>
 
 <main class="flex grow justify-center p-6">
     <section class="flex w-full max-w-2xl flex-col gap-2 leading-relaxed">
         <p>shIT is the control panel for hardware and software in Kistan 2.0.</p>
 
-        <h3>Layout & Navigation</h3>
+        <h2 class="text-xl">Layout & Navigation</h2>
         <p>
-            {#if isSlim}
+            <!-- both rendered, css picks. swapping after hydration shifted the page -->
+            <span class="lg:hidden">
                 Use the top-left button for <strong>Collections</strong> and the top-right button
                 for <strong>Scripts</strong>.
-            {:else}
+            </span>
+            <span class="not-lg:hidden">
                 <strong>Collections</strong> are on the left, and <strong>Scripts</strong> are on the
                 right.
-            {/if}
+            </span>
             Collections group different setups (committees, events, etc.) into sets of buttons. The Scripts
             sidebar contains a searchable tree of LMixer scripts. Clicking a collection switches to it,
             and clicking an already selected collection returns you to this guide.
         </p>
 
-        <h3>Run and Edit Modes</h3>
+        <h2 class="text-xl">Run and Edit Modes</h2>
         <p>
             Toggle the top title bar button (<ReadIcon class="inline size-[0.7lh]" />
             or <EditIcon class="inline size-[0.7lh]" />) to switch between controlling the locale
@@ -48,18 +44,19 @@
                 </span>
                 Customize the interface. You can edit labels, icons, and colors, delete items, or drag
                 to reorder buttons. To add a new button:
-                {#if isTouch}
+                <span class="not-pointer-coarse:hidden">
                     tap a script in the sidebar to add it to the current collection.
-                {:else}
+                </span>
+                <span class="pointer-coarse:hidden">
                     drag a script from the sidebar and drop it into the collection area.
-                {/if}
+                </span>
             </li>
         </ul>
 
         <div
             class="mt-2 w-full border-2 border-orange-400 bg-amber-200/50 p-4 dark:bg-amber-700/50"
         >
-            <h3>IMPORTANT!!</h3>
+            <h2 class="text-xl">IMPORTANT!!</h2>
             <ol class="list-decimal pl-4">
                 <li>Only use this panel while physically present in Kistan.</li>
                 <li>Do not disturb others in the locale.</li>

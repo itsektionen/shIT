@@ -14,12 +14,12 @@
 </script>
 
 <script lang="ts">
-    import FileIcon from "@iconify-svelte/material-symbols/description-rounded";
-    import FolderClosedIcon from "@iconify-svelte/material-symbols/folder-rounded";
-    import FolderOpenIcon from "@iconify-svelte/material-symbols/folder-open-rounded";
-    import PlayIcon from "@iconify-svelte/material-symbols/play-arrow-rounded";
-    import DragIcon from "@iconify-svelte/material-symbols/drag-click-rounded";
-    import AddIcon from "@iconify-svelte/material-symbols/add-2-rounded";
+    import FileIcon from "~icons/material-symbols/description-rounded";
+    import FolderClosedIcon from "~icons/material-symbols/folder-rounded";
+    import FolderOpenIcon from "~icons/material-symbols/folder-open-rounded";
+    import PlayIcon from "~icons/material-symbols/play-arrow-rounded";
+    import DragIcon from "~icons/material-symbols/drag-click-rounded";
+    import AddIcon from "~icons/material-symbols/add-2-rounded";
 
     import { MediaQuery, SvelteMap } from "svelte/reactivity";
     import ScriptTree from "./ScriptTree.svelte";

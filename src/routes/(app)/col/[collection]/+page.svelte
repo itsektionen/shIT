@@ -44,6 +44,8 @@
         return () => sortable.destroy();
     };
 
+    const scriptButtons = $derived(await getButtons(data.currentCollection.id));
+
     let editingButton = $state<Button | undefined>(undefined);
     let editMode = getEditModeContext();
 </script>
@@ -76,22 +78,26 @@
         });
     }}
 >
-    <ul
-        class={[
-            "grid grid-cols-[repeat(auto-fit,--spacing(64))]",
-            "grow items-center justify-center gap-2 px-4 py-8",
-        ]}
-        {@attach editMode.isEditing ? sortable : undefined}
-    >
-        {#each await getButtons(data.currentCollection.id) as btn (btn.id)}
-            <li class="flex h-full flex-row justify-center">
-                <ScriptButton
-                    {btn}
-                    onEdit={(btn) => {
-                        editingButton = btn;
-                    }}
-                />
-            </li>
-        {/each}
-    </ul>
+    {#if scriptButtons.length}
+        <ul
+            class={[
+                "grid grid-cols-[repeat(auto-fit,--spacing(64))]",
+                "grow items-center justify-center gap-2 px-4 py-8",
+            ]}
+            {@attach editMode.isEditing ? sortable : undefined}
+        >
+            {#each scriptButtons as btn (btn.id)}
+                <li class="flex h-full flex-row justify-center">
+                    <ScriptButton
+                        {btn}
+                        onEdit={(btn) => {
+                            editingButton = btn;
+                        }}
+                    />
+                </li>
+            {/each}
+        </ul>
+    {:else}
+        <p class="flex items-center justify-center size-full text-9xl" role="img" aria-label="No buttons">🦗</p>
+    {/if}
 </main>
