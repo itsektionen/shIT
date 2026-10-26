@@ -1,11 +1,13 @@
 <script lang="ts">
     import { resolve } from "$app/paths";
     import { getEditModeContext } from "#lib/context.js";
+    import { getScriptPaths } from "#lib/scripts.remote.js";
 
     import acronymsString from "#lib/acronyms.txt?raw";
     import logo from "#lib/assets/SMN Logo.svg";
     import EditIcon from "~icons/material-symbols/edit-rounded";
     import ReadIcon from "~icons/material-symbols/terminal-rounded";
+    import DisconnectedIcon from "~icons/material-symbols/cloud-off-rounded";
 
     const acronyms: string[] = acronymsString
         .split("\n")
@@ -14,6 +16,7 @@
     const acronym = acronyms[Math.floor(Math.random() * acronyms.length)];
 
     let editMode = getEditModeContext();
+    let connected = $derived(getScriptPaths().current?.connected ?? true);
 </script>
 
 <span class="grid max-w-full shrink grow grid-cols-[1fr_auto_1fr]">
@@ -44,4 +47,14 @@
             {acronym}
         </span>
     </a>
+    {#if !connected}
+        <span
+            role="status"
+            title="LMixer is not connected"
+            aria-label="LMixer is not connected"
+            class="flex size-9 shrink-0 items-center justify-center self-center justify-self-end"
+        >
+            <DisconnectedIcon class="size-7" />
+        </span>
+    {/if}
 </span>

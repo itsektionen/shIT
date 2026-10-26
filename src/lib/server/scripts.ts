@@ -28,4 +28,9 @@ mqttClient.on("message", (topic, payload) => {
     }
 });
 
+mqttClient.on("close", () => {
+    scriptPaths.clear();
+    scriptsEmitter.emit("update");
+});
+
 export const isKnownScript = (path: string) => scriptPaths.has(path);

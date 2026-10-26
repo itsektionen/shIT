@@ -48,7 +48,7 @@
         return name ? `${ICON_PREFIX}:${name}` : "";
     }
 
-    let scriptPaths = $derived(getScriptPaths().current);
+    let scriptPaths = $derived(getScriptPaths().current?.paths);
     let scriptInput = $state<HTMLInputElement>();
 
     const scriptValue = $derived(editButtonForm.fields.script.value() ?? "");

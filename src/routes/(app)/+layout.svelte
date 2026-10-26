@@ -11,6 +11,7 @@
     import CollectionEditModal from "#lib/components/modals/CollectionEditModal.svelte";
 
     import AddIcon from "~icons/material-symbols/add-2-rounded";
+    import DisconnectedIcon from "~icons/material-symbols/cloud-off-rounded";
     import { createCollection, getCollections, reorderCollections } from "#lib/db.remote.js";
     import { getScriptPaths } from "#lib/scripts.remote.js";
     import { createCollectionSchema } from "#lib/schemas.js";
@@ -37,8 +38,9 @@
     let collectionQuery = $state("");
     let scriptQuery = $state("");
 
+    let scriptsConnected = $derived(getScriptPaths().current?.connected ?? true);
     let searchedPaths: string[] = $derived.by(() => {
-        const paths = getScriptPaths().current ?? [];
+        const paths = getScriptPaths().current?.paths ?? [];
         return scriptQuery
             ? fuzzysort.go(scriptQuery, paths).map((result) => result.target)
             : paths;
@@ -183,7 +185,14 @@
         {/snippet}
 
         <div class="flex size-full flex-col text-sm">
-            <ScriptTree scriptPaths={searchedPaths} expandAll={!!scriptQuery} />
+            {#if scriptsConnected}
+                <ScriptTree scriptPaths={searchedPaths} expandAll={!!scriptQuery} />
+            {:else}
+                <p class="flex flex-col items-center gap-2 p-4 text-center opacity-60">
+                    <DisconnectedIcon class="size-8" />
+                    <span>LMixer is not connected. Script list unknown.</span>
+                </p>
+            {/if}
         </div>
     </Sidebar>
 </div>

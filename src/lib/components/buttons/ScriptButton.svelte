@@ -21,7 +21,7 @@
         onEdit: ((btn: Button) => void) | undefined;
     } = $props();
 
-    let scriptPaths = $derived(getScriptPaths().current);
+    let scriptPaths = $derived(getScriptPaths().current?.paths);
     let isInvalidScript = $derived(scriptPaths && !scriptPaths.includes(btn.script));
 
     let editMode = getEditModeContext();
