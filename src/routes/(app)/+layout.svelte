@@ -2,6 +2,8 @@
     import type { LayoutProps } from "./$types";
     import fuzzysort from "fuzzysort";
     import { resolve } from "$app/paths";
+    import Sortable from "sortablejs";
+    import type { Attachment } from "svelte/attachments";
 
     import Sidebar from "#lib/components/Sidebar.svelte";
     import SidebarToggleButton from "#lib/components/SidebarToggleButton.svelte";
@@ -10,7 +12,7 @@
     import CollectionEditModal from "#lib/components/modals/CollectionEditModal.svelte";
 
     import AddIcon from "~icons/material-symbols/add-2-rounded";
-    import { createCollection, getCollections } from "#lib/db.remote.js";
+    import { createCollection, getCollections, reorderCollections } from "#lib/db.remote.js";
     import { createCollectionSchema } from "#lib/schemas.js";
     import { onMount } from "svelte";
     import {
@@ -63,6 +65,34 @@
     let leftSidebar: Sidebar;
     let rightSidebar: Sidebar;
     let editingCollection = $state<Collection | undefined>(undefined);
+
+    const sortable: Attachment<HTMLElement> = (element) => {
+        const sortable = Sortable.create(element, {
+            animation: 100,
+            async onEnd(event) {
+                if (
+                    event.from !== event.to ||
+                    event.oldIndex === undefined ||
+                    event.newIndex === undefined
+                )
+                    return;
+
+                const collections = await getCollections();
+                const [moved] = collections.splice(event.oldIndex, 1);
+                collections.splice(event.newIndex, 0, moved);
+                reorderCollections(collections.map((c) => c.id)).updates(
+                    getCollections().withOverride((cols) =>
+                        cols.sort((a, b) => {
+                            const aIndex = collections.findIndex((i) => i.id === a.id);
+                            const bIndex = collections.findIndex((i) => i.id === b.id);
+                            return aIndex - bIndex;
+                        }),
+                    ),
+                );
+            },
+        });
+        return () => sortable.destroy();
+    };
 </script>
 
 {#if editingCollection}
@@ -87,22 +117,28 @@
             />
         {/snippet}
 
-        <ul class="flex w-full flex-col gap-2" aria-label="Collections">
-            {#each collectionQuery ? fuzzysort
-                      .go(collectionQuery, await getCollections(), { key: "label" })
-                      .map((r) => r.obj) : await getCollections() as collection (collection.id)}
-                {@const isCurrent = collection.id === params.collection}
-                <li>
-                    <CollectionButton
-                        col={collection}
-                        {isCurrent}
-                        onEdit={() => {
-                            editingCollection = collection;
-                        }}
-                    />
-                </li>
-            {/each}
-            <li>
+        <div class="flex w-full flex-col gap-2">
+            <ul
+                class="flex w-full flex-col gap-2"
+                aria-label="Collections"
+                {@attach editMode.isEditing && !collectionQuery ? sortable : undefined}
+            >
+                {#each collectionQuery ? fuzzysort
+                          .go(collectionQuery, await getCollections(), { key: "label" })
+                          .map((r) => r.obj) : await getCollections() as collection (collection.id)}
+                    {@const isCurrent = collection.id === params.collection}
+                    <li>
+                        <CollectionButton
+                            col={collection}
+                            {isCurrent}
+                            onEdit={() => {
+                                editingCollection = collection;
+                            }}
+                        />
+                    </li>
+                {/each}
+            </ul>
+            <div>
                 <form class="relative" {...createCollection.preflight(createCollectionSchema)}>
                     <input
                         {...createCollection.fields.label.as("text")}
@@ -124,8 +160,8 @@
                         <span>New collection</span>
                     </div>
                 </form>
-            </li>
-        </ul>
+            </div>
+        </div>
     </Sidebar>
 
     <div class="flex grow flex-col overflow-y-auto">

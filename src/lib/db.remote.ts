@@ -10,10 +10,22 @@ import { isKnownScript } from "#lib/server/scripts.js";
 import { resolveIcon } from "#lib/server/icons.js";
 
 export const getCollections = query(async () => {
-    return await db.select().from(collectionTable);
+    return await db.select().from(collectionTable).orderBy(collectionTable.order);
 });
 export const createCollection = form(createCollectionSchema, async (data) => {
-    const result = await db.insert(collectionTable).values(data).returning();
+    const result = await db.transaction(async (tx) => {
+        const lastOrder = await tx
+            .select()
+            .from(collectionTable)
+            .orderBy(desc(collectionTable.order))
+            .limit(1)
+            .then((res) => res[0]?.order ?? -1);
+
+        return await tx
+            .insert(collectionTable)
+            .values({ ...data, order: lastOrder + 1 })
+            .returning();
+    });
     await getCollections().refresh();
     redirect(303, `/col/${result[0].id}`);
 });
@@ -26,6 +38,17 @@ export const editCollection = form(collectionFormSchema, async ({ id, color, ...
 });
 export const deleteCollection = command(vb.string(), async (id) => {
     await db.delete(collectionTable).where(eq(collectionTable.id, id));
+    await getCollections().refresh();
+});
+export const reorderCollections = command(vb.array(vb.string()), async (orderedIds) => {
+    await db.transaction(async (tx) => {
+        for (let i = 0; i < orderedIds.length; i++) {
+            await tx
+                .update(collectionTable)
+                .set({ order: i })
+                .where(eq(collectionTable.id, orderedIds[i]));
+        }
+    });
     await getCollections().refresh();
 });
 

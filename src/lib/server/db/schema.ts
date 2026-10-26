@@ -7,6 +7,8 @@ export const collectionTable = sqliteTable("collection", (t) => ({
         .$defaultFn(() => crypto.randomUUID()),
     label: t.text().notNull(),
     color: t.text(),
+    // Used to determine the order of collections in the sidebar
+    order: t.integer().notNull(),
 }));
 
 export const buttonTable = sqliteTable(
