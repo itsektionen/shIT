@@ -12,7 +12,12 @@
 
     import AddIcon from "~icons/material-symbols/add-2-rounded";
     import DisconnectedIcon from "~icons/material-symbols/cloud-off-rounded";
-    import { createCollection, getCollections, reorderCollections } from "#lib/db.remote.js";
+    import {
+        createCollection,
+        getAllButtons,
+        getCollections,
+        reorderCollections,
+    } from "#lib/db.remote.js";
     import { getScriptPaths } from "#lib/scripts.remote.js";
     import { createCollectionSchema } from "#lib/schemas.js";
     import { setCollectionContext, setEditModeContext } from "#lib/context.js";
@@ -37,6 +42,25 @@
 
     let collectionQuery = $state("");
     let scriptQuery = $state("");
+
+    let displayedCollections = $derived.by(async () => {
+        // Svelte does not seem to understand read dependencies after an await
+        const query = collectionQuery;
+        const collections = await getCollections();
+        if (!query) return collections;
+
+        const mLabel = fuzzysort.go(query, collections, { key: "label" });
+        const mLabelIDs = new Set(mLabel.map((r) => r.obj.id));
+
+        const mButtonIds = new Set(
+            fuzzysort
+                .go(query, await getAllButtons(), { key: "label" })
+                .map((r) => r.obj.collectionId),
+        );
+        const mButtonOnly = collections.filter((c) => !mLabelIDs.has(c.id) && mButtonIds.has(c.id));
+
+        return [...mLabel.map((r) => r.obj), ...mButtonOnly];
+    });
 
     let scriptsConnected = $derived(getScriptPaths().current?.connected ?? true);
     let searchedPaths: string[] = $derived.by(() => {
@@ -107,9 +131,7 @@
                 aria-label="Collections"
                 {@attach editMode.isEditing && !collectionQuery ? sortable : undefined}
             >
-                {#each collectionQuery ? fuzzysort
-                          .go(collectionQuery, await getCollections(), { key: "label" })
-                          .map((r) => r.obj) : await getCollections() as collection (collection.id)}
+                {#each await displayedCollections as collection (collection.id)}
                     {@const isCurrent = collection.id === params.collection}
                     <li>
                         <CollectionButton

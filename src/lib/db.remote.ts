@@ -52,6 +52,10 @@ export const reorderCollections = command(vb.array(vb.string()), async (orderedI
     await getCollections().refresh();
 });
 
+export const getAllButtons = query(async () => {
+    return await db.select().from(buttonTable);
+});
+
 export const getButtons = query(vb.string(), async (collectionId) => {
     return await db
         .select()
