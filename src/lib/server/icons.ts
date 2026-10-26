@@ -1,4 +1,5 @@
 import { getIconData } from "@iconify/utils";
+import fuzzysort from "fuzzysort";
 
 type IconSet = Parameters<typeof getIconData>[0];
 
@@ -25,10 +26,6 @@ export async function findIcons(prefix: string, query: string, limit: number) {
     if (term.startsWith(`${prefix}:`)) term = term.slice(prefix.length + 1);
     if (!loadPack || !term) return [];
     const { icons, aliases } = (await loadPack()).default;
-    // names starting with the query first, then shortest
-    return [...Object.keys(icons), ...Object.keys(aliases ?? {})]
-        .filter((name) => name.includes(term))
-        .sort((a, b) => a.indexOf(term) - b.indexOf(term) || a.length - b.length)
-        .slice(0, limit)
-        .map((name) => `${prefix}:${name}`);
+    const names = [...Object.keys(icons), ...Object.keys(aliases ?? {})];
+    return fuzzysort.go(term, names, { limit }).map((result) => `${prefix}:${result.target}`);
 }
