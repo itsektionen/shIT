@@ -9,7 +9,8 @@
     import Icon from "../Icon.svelte";
     import type { buttonTable } from "#lib/server/db/schema.js";
     import { runScript } from "#lib/lmixer.remote.js";
-    import { confirmScriptExecution, getScriptsContext, getEditModeContext } from "#lib/context.js";
+    import { getScriptPaths } from "#lib/scripts.remote.js";
+    import { confirmScriptExecution, getEditModeContext } from "#lib/context.js";
 
     type Button = typeof buttonTable.$inferSelect;
     let {
@@ -20,8 +21,8 @@
         onEdit: ((btn: Button) => void) | undefined;
     } = $props();
 
-    let scripts = getScriptsContext();
-    let isInvalidScript = $derived(scripts.paths && !scripts.paths.includes(btn.script));
+    let scriptPaths = $derived(getScriptPaths().current);
+    let isInvalidScript = $derived(scriptPaths && !scriptPaths.includes(btn.script));
 
     let editMode = getEditModeContext();
 

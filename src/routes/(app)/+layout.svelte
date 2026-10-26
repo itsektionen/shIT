@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { LayoutProps } from "./$types";
     import fuzzysort from "fuzzysort";
-    import { resolve } from "$app/paths";
     import Sortable from "sortablejs";
     import type { Attachment } from "svelte/attachments";
 
@@ -13,14 +12,9 @@
 
     import AddIcon from "~icons/material-symbols/add-2-rounded";
     import { createCollection, getCollections, reorderCollections } from "#lib/db.remote.js";
+    import { getScriptPaths } from "#lib/scripts.remote.js";
     import { createCollectionSchema } from "#lib/schemas.js";
-    import { onMount } from "svelte";
-    import {
-        getScriptsContext,
-        setCollectionContext,
-        setEditModeContext,
-        setScriptsContext,
-    } from "#lib/context.js";
+    import { setCollectionContext, setEditModeContext } from "#lib/context.js";
     import TitleBar from "#lib/components/TitleBar.svelte";
 
     import type { collectionTable } from "#lib/server/db/schema.js";
@@ -40,23 +34,11 @@
     });
     setCollectionContext(collectionCtx);
 
-    let scripts = $state<ReturnType<typeof setScriptsContext>>({ paths: undefined });
-    setScriptsContext(scripts);
-    onMount(() => {
-        const eventSource = new EventSource(resolve("api/mqtt/script_paths"));
-        eventSource.onmessage = (event) => {
-            scripts.paths = JSON.parse(event.data);
-        };
-        return () => {
-            eventSource.close();
-        };
-    });
-
     let collectionQuery = $state("");
     let scriptQuery = $state("");
 
     let searchedPaths: string[] = $derived.by(() => {
-        const paths = getScriptsContext().paths ?? [];
+        const paths = getScriptPaths().current ?? [];
         return scriptQuery
             ? fuzzysort.go(scriptQuery, paths).map((result) => result.target)
             : paths;

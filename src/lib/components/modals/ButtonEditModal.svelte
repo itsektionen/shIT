@@ -7,9 +7,9 @@
     import type { buttonTable } from "#lib/server/db/schema.js";
     import IconSearchResults from "../IconSearchResults.svelte";
     import { deleteButton, editButton, getButtons } from "#lib/db.remote.js";
+    import { getScriptPaths } from "#lib/scripts.remote.js";
     import { buttonFormSchema } from "#lib/schemas.js";
     import Icon from "../Icon.svelte";
-    import { getScriptsContext } from "#lib/context.js";
     import ScriptButton from "../buttons/ScriptButton.svelte";
     import { onMount } from "svelte";
     import fuzzysort from "fuzzysort";
@@ -48,12 +48,12 @@
         return name ? `${ICON_PREFIX}:${name}` : "";
     }
 
-    let scripts = getScriptsContext();
+    let scriptPaths = $derived(getScriptPaths().current);
     let scriptInput = $state<HTMLInputElement>();
 
     const scriptValue = $derived(editButtonForm.fields.script.value() ?? "");
     const scriptSuggestions = $derived.by(() => {
-        const paths = scripts.paths ?? [];
+        const paths = scriptPaths ?? [];
         if (paths.includes(scriptValue)) return [];
         return scriptValue
             ? fuzzysort.go(scriptValue, paths, { limit: 50 }).map((r) => r.target)
@@ -63,9 +63,9 @@
     // don't block saving unchanged scripts
     $effect(() => {
         const scriptUnknown =
-            scripts.paths &&
+            scriptPaths &&
             scriptValue !== passedButton.script &&
-            !scripts.paths.includes(scriptValue);
+            !scriptPaths.includes(scriptValue);
         scriptInput?.setCustomValidity(scriptUnknown ? "Script not found" : "");
     });
 </script>

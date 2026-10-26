@@ -5,10 +5,6 @@ export const [getCollectionContext, setCollectionContext] = createContext<{
     current: typeof collectionTable.$inferSelect | undefined;
 }>();
 
-export const [getScriptsContext, setScriptsContext] = createContext<{
-    paths: string[] | undefined;
-}>();
-
 export const [getEditModeContext, setEditModeContext] = createContext<{
     isEditing: boolean;
 }>();
