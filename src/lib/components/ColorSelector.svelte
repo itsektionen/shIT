@@ -2,7 +2,7 @@
     import type { RemoteFormField } from "$app/server";
     import EraserIcon from "~icons/material-symbols/ink-eraser-rounded";
 
-    let { field }: { field: RemoteFormField<string> } = $props();
+    let { field, id }: { field: RemoteFormField<string>; id?: string } = $props();
 
     type HEX = `#${string}`;
 
@@ -86,6 +86,7 @@
         ]}
     >
         <input
+            {id}
             type="color"
             class="absolute inset-0 size-full cursor-pointer opacity-0"
             title="Custom"

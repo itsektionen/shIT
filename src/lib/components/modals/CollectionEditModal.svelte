@@ -88,15 +88,14 @@
 
         <!-- Color field -->
         <div class="flex flex-col gap-1">
-            <!-- FIXME: Clicking on the label does not focus the arbitrary color input -->
-            <label class="flex items-center gap-1 font-semibold">
+            <label for="{uid}-color" class="flex items-center gap-1 font-semibold">
                 <ColorIcon class="size-[1lh]" />
                 <span class="grow">Color</span>
             </label>
             {#each editCollectionForm.fields.color.issues() as issue, i (i)}
                 <span class="text-sm text-red-400">{issue.message}</span>
             {/each}
-            <ColorSelector field={editCollectionForm.fields.color} />
+            <ColorSelector field={editCollectionForm.fields.color} id="{uid}-color" />
         </div>
 
         <!-- Action buttons -->
