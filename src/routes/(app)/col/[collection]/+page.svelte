@@ -30,7 +30,10 @@
                 const [moved] = buttons.splice(event.oldIndex, 1);
                 buttons.splice(event.newIndex, 0, moved);
                 // Send to the server
-                reorderButtons(buttons.map((b) => b.id)).updates(
+                reorderButtons({
+                    collectionId: data.currentCollection.id,
+                    orderedIds: buttons.map((b) => b.id),
+                }).updates(
                     getButtons(data.currentCollection.id).withOverride((btns) =>
                         btns.sort((a, b) => {
                             const aIndex = buttons.findIndex((i) => i.id === a.id);

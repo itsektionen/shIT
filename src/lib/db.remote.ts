@@ -108,13 +108,23 @@ export const editButton = form(
         return { success: collectionId !== null };
     },
 );
-export const reorderButtons = command(vb.array(vb.string()), async (orderedIds) => {
-    await db.transaction(async (tx) => {
-        for (let i = 0; i < orderedIds.length; i++) {
-            await tx.update(buttonTable).set({ order: i }).where(eq(buttonTable.id, orderedIds[i]));
-        }
-    });
-});
+export const reorderButtons = command(
+    vb.object({
+        collectionId: vb.string(),
+        orderedIds: vb.array(vb.string()),
+    }),
+    async ({ collectionId, orderedIds }) => {
+        await db.transaction(async (tx) => {
+            for (let i = 0; i < orderedIds.length; i++) {
+                await tx
+                    .update(buttonTable)
+                    .set({ order: i })
+                    .where(eq(buttonTable.id, orderedIds[i]));
+            }
+        });
+        await getButtons(collectionId).refresh();
+    },
+);
 export const deleteButton = command(vb.string(), async (id) => {
     const collectionId = await db.transaction(async (tx) => {
         const button = await tx
