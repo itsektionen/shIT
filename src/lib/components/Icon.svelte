@@ -3,12 +3,12 @@
     import type { ClassValue } from "svelte/elements";
     import { getIcon } from "#lib/icons.remote.js";
 
-    let { 
-        icon, 
-        class: className
-    }: { 
-        icon: string | null | undefined; 
-        class?: ClassValue
+    let {
+        icon,
+        class: className,
+    }: {
+        icon: string | null | undefined;
+        class?: ClassValue;
     } = $props();
 
     const data = $derived(icon ? await getIcon(icon) : null);

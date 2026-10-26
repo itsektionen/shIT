@@ -101,6 +101,12 @@
             {/each}
         </ul>
     {:else}
-        <p class="flex items-center justify-center size-full text-9xl" role="img" aria-label="No buttons">🦗</p>
+        <p
+            class="flex size-full items-center justify-center text-9xl"
+            role="img"
+            aria-label="No buttons"
+        >
+            🦗
+        </p>
     {/if}
 </main>

@@ -41,7 +41,7 @@ body {
 }
 
 .tile-button:focus-visible {
-    @apply ring-0 outline-2 outline-solid outline-offset-2 outline-foreground;
+    @apply ring-0 outline-2 outline-offset-2 outline-foreground outline-solid;
 }
 
 .icon-button {
