@@ -3,6 +3,7 @@ export const prerender = true;
 const webManifest = {
     name: "shIT",
     short_name: "shIT",
+    start_url: "/",
     icons: [
         {
             src: "/web-app-manifest-192x192.png",
@@ -17,7 +18,7 @@ const webManifest = {
             purpose: "maskable",
         },
     ],
-    theme_color: "#443355",
+    theme_color: "#1a1a2f",
     background_color: "#0e0e18",
     display: "standalone",
 } as const;

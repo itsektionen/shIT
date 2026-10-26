@@ -12,8 +12,8 @@
 <meta name="twitter:card" content="summary" />
 
 <meta name="color-scheme" content="dark light" />
-<meta name="theme-color" content="#443355" media="(prefers-color-scheme: dark)" />
-<meta name="theme-color" content="#f4f4fc" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1a1a2f" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#e5e0fe" media="(prefers-color-scheme: light)" />
 
 <link rel="icon" type="image/png" href="/favicon-96x96.png" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
