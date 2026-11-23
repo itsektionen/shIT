@@ -1,7 +1,10 @@
 import mqtt from "mqtt";
-import { MQTT_URL } from "$app/env/private";
+import { MQTT_PASSWORD, MQTT_URL, MQTT_USERNAME } from "$app/env/private";
 
-export const mqttClient = mqtt.connect(MQTT_URL);
+export const mqttClient = mqtt.connect(MQTT_URL, {
+    username: MQTT_USERNAME || undefined,
+    password: MQTT_PASSWORD || undefined,
+});
 
 mqttClient.on("connect", () => {
     console.log("Successfully connected to MQTT broker at", MQTT_URL);
