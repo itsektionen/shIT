@@ -22,9 +22,11 @@
     } = $props();
 
     let scriptPaths = $derived(getScriptPaths().current?.paths);
-    let isInvalidScript = $derived(scriptPaths && !scriptPaths.includes(btn.script));
+    let connected = $derived(getScriptPaths().current?.connected ?? true);
+    let isInvalidScript = $derived(connected && scriptPaths && !scriptPaths.includes(btn.script));
 
     let editMode = getEditModeContext();
+    let isDisabled = $derived(!connected && !editMode.isEditing);
 
     let runState = $state<"idle" | "running" | "done" | "failed">("idle");
     let runError = $state("");
@@ -44,18 +46,25 @@
 </script>
 
 <div
-    class={["group relative w-64 text-wrap select-none", btn.color && "text-contrast"]}
+    class={[
+        "group relative w-64 text-wrap select-none",
+        btn.color && "text-contrast",
+        isDisabled && "opacity-50",
+    ]}
     style:--bg={btn.color || undefined}
     title={runState === "failed"
         ? runError
-        : `Script: "${btn.script}"${isInvalidScript ? " (not found)" : ""}`}
+        : `Script: "${btn.script}"${isInvalidScript ? " (not found)" : ""}${!connected ? " (LMixer is not connected)" : ""}`}
 >
     <button
         class={[
-            "tile-button min-h-16 w-full cursor-pointer truncate overflow-hidden px-4",
+            "tile-button min-h-16 w-full truncate overflow-hidden px-4",
             "bg-secondary text-xl font-semibold",
-            "group-hover:opacity-80 focus-visible:opacity-80 active:scale-95",
+            isDisabled
+                ? "cursor-not-allowed"
+                : "cursor-pointer group-hover:opacity-80 focus-visible:opacity-80 active:scale-95",
         ]}
+        disabled={isDisabled}
         style:background={btn.color || undefined}
         onclick={() => {
             if (editMode.isEditing || isInvalidScript) {
@@ -77,6 +86,7 @@
             "pointer-events-none absolute top-0 right-0 flex h-6 min-w-6 items-center",
             runState === "idle" &&
                 !isInvalidScript &&
+                !isDisabled &&
                 "not-pointer-coarse:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
         ]}
     >
